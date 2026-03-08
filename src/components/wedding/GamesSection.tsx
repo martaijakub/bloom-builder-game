@@ -2,9 +2,20 @@ import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
 import { Link } from "react-router-dom";
 
+const isWeddingDay = (): boolean => {
+  const now = new Date();
+  const weddingDay = new Date("2026-08-08T00:00:00");
+  return (
+    now.getFullYear() === weddingDay.getFullYear() &&
+    now.getMonth() === weddingDay.getMonth() &&
+    now.getDate() === weddingDay.getDate()
+  );
+};
+
 const GamesSection = () => {
   const { t } = useLang();
   const { ref, visible } = useReveal();
+  const disabledOnWeddingDay = isWeddingDay();
 
   const games = [
     {
