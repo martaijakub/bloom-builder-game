@@ -182,6 +182,7 @@ const TableVisual = ({
   onEdit,
   onDelete,
   onUpdateGuests,
+  onSelect,
 }: {
   table: TableData;
   isAdmin: boolean;
@@ -190,11 +191,13 @@ const TableVisual = ({
   onEdit?: (table: TableData) => void;
   onDelete?: (id: string) => void;
   onUpdateGuests?: (tableId: string, guests: Guest[]) => void;
+  onSelect?: (table: TableData) => void;
 }) => {
   const { t } = useLang();
   const guestCount = table.guests.length;
   const { width, height } = table;
   const tableRectRef = useRef<HTMLDivElement>(null);
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
 
   // Ensure all guests have perimeterPos
   const guestsWithPos = table.guests.map((g, i) => ({
@@ -231,13 +234,22 @@ const TableVisual = ({
     document.addEventListener("mouseup", onUp);
   }, [isAdmin, width, height, guestsWithPos, table.id, onUpdateGuests]);
 
+  const handleClick = () => {
+    if (!isAdmin && highlighted && onSelect) {
+      onSelect(table);
+      tableWrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   return (
     <div
+      ref={tableWrapperRef}
       className={`absolute -translate-x-1/2 -translate-y-1/2 group ${
-        isAdmin ? "cursor-grab active:cursor-grabbing" : ""
+        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : ""
       }`}
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
+      onClick={handleClick}
     >
       {/* Table rectangle */}
       <div
@@ -430,6 +442,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTable, setSelectedTable] = useState<TableData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
@@ -592,17 +605,44 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             onEdit={setEditingTable}
             onDelete={deleteTable}
             onUpdateGuests={updateTableGuests}
+            onSelect={setSelectedTable}
           />
         ))}
       </div>
+
+      {/* Selected table detail */}
+      {!isAdmin && selectedTable && (
+        <div className="mt-6 border border-wedding-gold/40 bg-wedding-gold/5 p-6 max-w-md mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-serif text-lg font-light text-foreground">{selectedTable.label}</h4>
+            <button
+              onClick={() => setSelectedTable(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <ul className="space-y-1.5">
+            {selectedTable.guests.map((g) => (
+              <li key={g.id} className="font-sans text-sm text-foreground flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-wedding-gold/60" />
+                {g.name}
+              </li>
+            ))}
+          </ul>
+          {selectedTable.guests.length === 0 && (
+            <p className="font-sans text-xs text-muted-foreground">{t("Brak gości", "No guests")}</p>
+          )}
+        </div>
+      )}
 
       {/* Legend */}
       {!isAdmin && (
         <div className="mt-8 text-center">
           <p className="font-sans text-xs text-muted-foreground">
             {t(
-              "Kliknij na stół, aby zobaczyć szczegóły. Układ stołów może ulec zmianie.",
-              "Click a table to see details. Seating arrangement may change."
+              "Kliknij na podświetlony stół, aby zobaczyć listę gości.",
+              "Click a highlighted table to see the guest list."
             )}
           </p>
         </div>
