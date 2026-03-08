@@ -429,10 +429,22 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [adminMode, setAdminMode] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
   const isAdmin = adminMode || !!isAdminProp;
+
+  // Find table IDs matching the search query
+  const highlightedTableIds = searchQuery.trim().length >= 2
+    ? tables
+        .filter((t) =>
+          t.guests.some((g) =>
+            g.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+          )
+        )
+        .map((t) => t.id)
+    : [];
 
   const handleDragStart = useCallback((e: React.MouseEvent, tableId: string) => {
     if (!isAdmin) return;
