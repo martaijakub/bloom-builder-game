@@ -18,7 +18,6 @@ const IndexContent = () => {
     <div className="min-h-screen bg-background">
       <Navbar unlocked={unlocked} onTryUnlock={tryUnlock} />
       <Hero />
-      <CountdownTimer />
       <Schedule />
       <RSVPForm />
       <Accommodations />
