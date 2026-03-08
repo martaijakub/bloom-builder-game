@@ -131,6 +131,8 @@ const PhotoGallery = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [photosByTag, setPhotosByTag] = useState<Record<string, CloudinaryResource[]>>({});
 
   const fetchPhotos = useCallback(async () => {
     setLoading(true);
