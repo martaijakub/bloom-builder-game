@@ -182,6 +182,7 @@ const TableVisual = ({
   onEdit,
   onDelete,
   onUpdateGuests,
+  onSelect,
 }: {
   table: TableData;
   isAdmin: boolean;
@@ -190,11 +191,13 @@ const TableVisual = ({
   onEdit?: (table: TableData) => void;
   onDelete?: (id: string) => void;
   onUpdateGuests?: (tableId: string, guests: Guest[]) => void;
+  onSelect?: (table: TableData) => void;
 }) => {
   const { t } = useLang();
   const guestCount = table.guests.length;
   const { width, height } = table;
   const tableRectRef = useRef<HTMLDivElement>(null);
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
 
   // Ensure all guests have perimeterPos
   const guestsWithPos = table.guests.map((g, i) => ({
