@@ -530,6 +530,12 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
               <Plus className="w-3.5 h-3.5" /> {t("Dodaj stół", "Add Table")}
             </button>
             <button
+              onClick={() => exportTablesJSON(tables)}
+              className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 border border-wedding-gold/30 px-3 py-1.5"
+            >
+              <Download className="w-3.5 h-3.5" /> {t("Eksportuj JSON", "Export JSON")}
+            </button>
+            <button
               onClick={() => setAdminMode(false)}
               className="font-sans text-xs text-muted-foreground hover:text-foreground border border-border/60 px-3 py-1.5"
             >
