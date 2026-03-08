@@ -16,6 +16,7 @@ const Games = () => {
   useEffect(() => {
     if (gameParam === "memory") setView("memory");
     else if (gameParam === "wordle") setView("wordle");
+    else if (gameParam === "tripeaks") setView("tripeaks");
   }, [gameParam]);
 
   if (view !== "menu") {
