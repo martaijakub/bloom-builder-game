@@ -87,6 +87,29 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
               </button>
             </li>
           ))}
+          {/* Mobile language toggle */}
+          <li className="md:hidden px-6 py-3 flex items-center gap-2">
+            <button
+              onClick={() => { setLang("pl"); handleNavClick(); }}
+              className={`px-3 py-1.5 rounded-full font-sans text-xs tracking-widest transition-all ${
+                lang === "pl"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              PL
+            </button>
+            <button
+              onClick={() => { setLang("en"); handleNavClick(); }}
+              className={`px-3 py-1.5 rounded-full font-sans text-xs tracking-widest transition-all ${
+                lang === "en"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              EN
+            </button>
+          </li>
         </ul>
 
         {/* Lang toggle */}

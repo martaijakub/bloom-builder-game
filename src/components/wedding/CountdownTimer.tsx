@@ -43,13 +43,13 @@ const TimeUnit = ({
       className="flex flex-col items-center opacity-0 translate-y-4 animate-fade-up"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
     >
-      <div className="bg-card border border-wedding-gold/30 rounded-lg px-4 py-3 md:px-6 md:py-4 min-w-[70px] md:min-w-[90px] transition-shadow duration-500 hover:shadow-[0_0_20px_hsl(var(--wedding-gold)/0.15)]">
-        <p className="font-serif text-3xl md:text-4xl font-light text-wedding-gold tabular-nums">
+      <div className="bg-card border border-wedding-gold/30 rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4 min-w-[60px] sm:min-w-[70px] md:min-w-[90px] transition-shadow duration-500 hover:shadow-[0_0_20px_hsl(var(--wedding-gold)/0.15)]">
+        <p className="font-serif text-2xl sm:text-3xl md:text-4xl font-light text-wedding-gold tabular-nums">
           <FlipDigit value={current[0]} prevValue={prev[0]} />
           <FlipDigit value={current[1]} prevValue={prev[1]} />
         </p>
       </div>
-      <p className="font-sans text-xs md:text-sm tracking-[0.15em] uppercase text-muted-foreground mt-2">
+      <p className="font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.1em] sm:tracking-[0.15em] uppercase text-muted-foreground mt-1.5 sm:mt-2">
         {label}
       </p>
     </div>
@@ -118,7 +118,7 @@ const CountdownTimer = () => {
           {t("Odliczanie", "Countdown")}
         </h2>
 
-        <div className="flex justify-center items-center gap-3 md:gap-6">
+        <div className="flex justify-center items-center gap-1.5 sm:gap-3 md:gap-6">
           <TimeUnit value={timeLeft.days} prevValue={prevTimeLeft.current.days} label={t("Dni", "Days")} delay={0} />
           <PulseDot />
           <TimeUnit value={timeLeft.hours} prevValue={prevTimeLeft.current.hours} label={t("Godziny", "Hours")} delay={100} />
