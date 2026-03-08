@@ -14,6 +14,8 @@ interface TableData {
   guests: Guest[];
   x: number; // percentage position
   y: number;
+  width: number; // width in pixels
+  height: number; // height in pixels
 }
 
 // ---- Default data ----
