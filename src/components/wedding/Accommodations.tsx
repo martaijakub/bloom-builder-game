@@ -1,7 +1,9 @@
 import { useLang } from "@/contexts/LangContext";
+import { useReveal } from "@/hooks/useReveal";
 
 const Accommodations = () => {
   const { t } = useLang();
+  const { ref, visible } = useReveal();
 
   const hotels = [
     { name: "Hotel Otomin", address: "ul. Żurawia, Otomin" },
@@ -9,26 +11,35 @@ const Accommodations = () => {
   ];
 
   return (
-    <section id="stay" className="py-24 px-5 max-w-6xl mx-auto">
-      <h2 className="font-script text-5xl text-primary text-center mb-6">
-        {t("Gdzie się zatrzymać", "Where to Stay")}
-      </h2>
-      <p className="text-center text-muted-foreground font-sans text-sm max-w-3xl mx-auto mb-12 leading-relaxed">
-        {t(
-          "Drodzy Goście! Z uwagi na ograniczoną liczbę miejsc noclegowych w naszej sali, nie wszystkie zaproszenia zawierają zapewnienie noclegu. Jeżeli Twoje zaproszenie nie obejmuje tej opcji, przygotowaliśmy listę polecanych hoteli zlokalizowanych w pobliżu miejsca wesela, które ułatwią Wam rezerwację indywidualną.",
-          "Dear Guests! Due to limited accommodation capacity at our venue, not all invitations include a stay. If your invitation does not include this option, we have prepared a list of recommended hotels situated near the wedding venue to assist you with your individual booking."
-        )}
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-        {hotels.map((hotel) => (
-          <div
-            key={hotel.name}
-            className="bg-card p-8 rounded-lg shadow-md hover:-translate-y-1 transition-transform duration-300"
-          >
-            <h3 className="font-serif text-xl text-foreground mb-3">{hotel.name}</h3>
-            <p className="font-sans text-sm text-muted-foreground">{hotel.address}</p>
-          </div>
-        ))}
+    <section id="stay" className="py-28 md:py-36 px-6">
+      <div ref={ref} className={`max-w-5xl mx-auto reveal-stagger ${visible ? "visible" : ""}`}>
+        <div className="reveal-child text-center mb-20">
+          <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
+            {t("Noclegi", "Accommodation")}
+          </p>
+          <h2 className="font-serif text-5xl md:text-6xl font-light text-foreground tracking-tight mb-6">
+            {t("Gdzie się zatrzymać", "Where to Stay")}
+          </h2>
+          <p className="font-sans text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {t(
+              "Drodzy Goście! Z uwagi na ograniczoną liczbę miejsc noclegowych w naszej sali, nie wszystkie zaproszenia zawierają zapewnienie noclegu. Jeżeli Twoje zaproszenie nie obejmuje tej opcji, przygotowaliśmy listę polecanych hoteli w pobliżu.",
+              "Dear Guests! Due to limited accommodation at our venue, not all invitations include a stay. If yours doesn't, here are recommended nearby hotels."
+            )}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto">
+          {hotels.map((hotel) => (
+            <div
+              key={hotel.name}
+              className="reveal-child border border-border/60 bg-card/50 backdrop-blur-sm p-8 md:p-10 transition-all duration-500 hover:border-wedding-gold/40"
+            >
+              <h3 className="font-serif text-2xl font-light text-foreground mb-2 tracking-tight">
+                {hotel.name}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground">{hotel.address}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
