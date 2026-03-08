@@ -409,8 +409,13 @@ const TableEditor = ({
 // ---- Main Seating Plan ----
 const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const { t } = useLang();
-  const [tables, setTables] = useState<TableData[]>(loadTables);
   const [adminMode, setAdminMode] = useState(false);
+  const isAdmin = adminMode || !!isAdminProp;
+
+  // Admin sees draft from localStorage; guests see the committed JSON file
+  const [tables, setTables] = useState<TableData[]>(() =>
+    isAdmin ? loadAdminTables() : getPublicTables()
+  );
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -418,7 +423,10 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
-  const isAdmin = adminMode || !!isAdminProp;
+  // Switch data source when admin mode toggles
+  useEffect(() => {
+    setTables(isAdmin ? loadAdminTables() : getPublicTables());
+  }, [isAdmin]);
 
   // Find table IDs matching the search query
   const highlightedTableIds = searchQuery.trim().length >= 2
