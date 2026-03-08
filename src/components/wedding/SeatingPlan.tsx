@@ -480,7 +480,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
     };
     const updated = [...tables, newTable];
     setTables(updated);
-    saveTables(updated);
+    saveAdminTables(updated);
     setEditingTable(newTable);
   };
 
