@@ -3,6 +3,7 @@ import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
 import { Calendar, Upload, Share2, X } from "lucide-react";
 import SeatingPlan from "./SeatingPlan";
+import PhotoGallery from "./PhotoGallery";
 
 declare global {
   interface Window {
@@ -267,6 +268,9 @@ const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
               Instagram #MartaJakub2026 · WhatsApp · {t("nasza chmura (przycisk powyżej)", "our cloud (button above)")}
             </p>
           </div>
+
+          {/* Photo Gallery */}
+          <PhotoGallery />
         </div>
       </section>
     </>
