@@ -268,6 +268,9 @@ const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
               Instagram #MartaJakub2026 · WhatsApp · {t("nasza chmura (przycisk powyżej)", "our cloud (button above)")}
             </p>
           </div>
+
+          {/* Photo Gallery */}
+          <PhotoGallery />
         </div>
       </section>
     </>
