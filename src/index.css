@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,40 +6,41 @@
 
 @layer base {
   :root {
-    --background: 30 33% 97%;
-    --foreground: 0 0% 35%;
+    --background: 40 20% 96%;
+    --foreground: 40 10% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 35%;
+    --card: 40 15% 98%;
+    --card-foreground: 40 10% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 35%;
+    --popover: 40 15% 98%;
+    --popover-foreground: 40 10% 20%;
 
-    --primary: 43 56% 52%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 82 20% 32%;
+    --primary-foreground: 40 20% 96%;
 
-    --secondary: 30 50% 77%;
-    --secondary-foreground: 0 0% 25%;
+    --secondary: 40 18% 88%;
+    --secondary-foreground: 40 10% 25%;
 
-    --muted: 30 30% 93%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 40 12% 92%;
+    --muted-foreground: 40 8% 50%;
 
-    --accent: 14 68% 93%;
-    --accent-foreground: 0 0% 30%;
+    --accent: 40 30% 90%;
+    --accent-foreground: 40 10% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 30 20% 88%;
-    --input: 30 20% 88%;
-    --ring: 43 56% 52%;
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 82 20% 32%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --wedding-gold: 43 56% 52%;
-    --wedding-pink: 14 68% 93%;
-    --wedding-cream: 30 33% 97%;
-    --wedding-sage: 100 15% 56%;
+    --wedding-gold: 43 45% 48%;
+    --wedding-olive: 82 20% 32%;
+    --wedding-ivory: 40 20% 96%;
+    --wedding-sage: 82 15% 55%;
+    --wedding-warm: 30 25% 92%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -52,25 +53,25 @@
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 30 20% 90%;
-    --card: 0 0% 12%;
-    --card-foreground: 30 20% 90%;
-    --popover: 0 0% 12%;
-    --popover-foreground: 30 20% 90%;
-    --primary: 43 56% 52%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 30 30% 20%;
-    --secondary-foreground: 30 20% 90%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 30 10% 60%;
-    --accent: 14 30% 20%;
-    --accent-foreground: 30 20% 90%;
+    --background: 40 8% 8%;
+    --foreground: 40 15% 88%;
+    --card: 40 8% 12%;
+    --card-foreground: 40 15% 88%;
+    --popover: 40 8% 12%;
+    --popover-foreground: 40 15% 88%;
+    --primary: 82 20% 42%;
+    --primary-foreground: 40 20% 96%;
+    --secondary: 40 10% 18%;
+    --secondary-foreground: 40 15% 88%;
+    --muted: 40 5% 15%;
+    --muted-foreground: 40 8% 55%;
+    --accent: 40 10% 16%;
+    --accent-foreground: 40 15% 88%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 43 56% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 5% 18%;
+    --input: 40 5% 18%;
+    --ring: 82 20% 42%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -89,6 +90,46 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
   }
+}
+
+/* Scroll reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.reveal-stagger > .reveal-child {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-stagger.visible > .reveal-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger.visible > .reveal-child:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(2) { transition-delay: 80ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(3) { transition-delay: 160ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(4) { transition-delay: 240ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(6) { transition-delay: 400ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(7) { transition-delay: 480ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(8) { transition-delay: 560ms; }
+.reveal-stagger.visible > .reveal-child:nth-child(9) { transition-delay: 640ms; }
+
+/* Thin gold divider */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(43 45% 48% / 0.5), transparent);
 }

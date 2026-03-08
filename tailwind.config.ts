@@ -15,8 +15,8 @@ export default {
     extend: {
       fontFamily: {
         script: ['"Dancing Script"', 'cursive'],
-        serif: ['"Playfair Display"', 'serif'],
-        sans: ['Roboto', 'sans-serif'],
+        serif: ['"Cormorant Garamond"', 'serif'],
+        sans: ['"DM Sans"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -54,9 +54,10 @@ export default {
         },
         wedding: {
           gold: "hsl(var(--wedding-gold))",
-          pink: "hsl(var(--wedding-pink))",
-          cream: "hsl(var(--wedding-cream))",
+          olive: "hsl(var(--wedding-olive))",
+          ivory: "hsl(var(--wedding-ivory))",
           sage: "hsl(var(--wedding-sage))",
+          warm: "hsl(var(--wedding-warm))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
