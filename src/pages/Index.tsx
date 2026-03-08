@@ -12,7 +12,7 @@ import UnlockModal from "@/components/wedding/UnlockModal";
 import Footer from "@/components/wedding/Footer";
 
 const IndexContent = () => {
-  const { unlocked, showModal, setShowModal, tryUnlock, checkPassword, adminUnlock } = useUnlock();
+  const { unlocked, isAdmin, showModal, setShowModal, tryUnlock, checkPassword, adminUnlock } = useUnlock();
 
   return (
     <div className="min-h-screen bg-background">
@@ -23,7 +23,7 @@ const IndexContent = () => {
       <Accommodations />
       <Activities />
       <GamesSection />
-      <LockedSections unlocked={unlocked} />
+      <LockedSections unlocked={unlocked} isAdmin={isAdmin} />
       <UnlockModal open={showModal} onClose={() => setShowModal(false)} onSubmit={checkPassword} />
       <Footer onAdminUnlock={adminUnlock} />
     </div>
