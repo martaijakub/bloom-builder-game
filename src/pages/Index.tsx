@@ -2,7 +2,6 @@ import { LangProvider } from "@/contexts/LangContext";
 import { useUnlock } from "@/hooks/useUnlock";
 import Navbar from "@/components/wedding/Navbar";
 import Hero from "@/components/wedding/Hero";
-import CountdownTimer from "@/components/wedding/CountdownTimer";
 import Schedule from "@/components/wedding/Schedule";
 import RSVPForm from "@/components/wedding/RSVPForm";
 import Accommodations from "@/components/wedding/Accommodations";
