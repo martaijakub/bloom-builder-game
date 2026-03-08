@@ -38,15 +38,11 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
     <nav
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-lg shadow-sm"
-          : "bg-transparent"
+          ? "bg-wedding-blush/60 backdrop-blur-lg shadow-sm"
+          : "bg-wedding-blush/30"
       }`}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-        {/* Logo / brand */}
-        <a href="#home" className="font-script text-xl text-wedding-gold tracking-wide">
-          M & J
-        </a>
 
         {/* Hamburger */}
         <button
