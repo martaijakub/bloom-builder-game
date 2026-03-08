@@ -234,13 +234,22 @@ const TableVisual = ({
     document.addEventListener("mouseup", onUp);
   }, [isAdmin, width, height, guestsWithPos, table.id, onUpdateGuests]);
 
+  const handleClick = () => {
+    if (!isAdmin && highlighted && onSelect) {
+      onSelect(table);
+      tableWrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   return (
     <div
+      ref={tableWrapperRef}
       className={`absolute -translate-x-1/2 -translate-y-1/2 group ${
-        isAdmin ? "cursor-grab active:cursor-grabbing" : ""
+        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : ""
       }`}
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
+      onClick={handleClick}
     >
       {/* Table rectangle */}
       <div
