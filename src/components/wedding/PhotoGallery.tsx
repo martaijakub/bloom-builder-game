@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { RefreshCw, X, ChevronLeft, ChevronRight, Image } from "lucide-react";
 
