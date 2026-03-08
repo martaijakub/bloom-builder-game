@@ -9,7 +9,7 @@ const Hero = () => {
       className="min-h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden"
     >
       {/* Subtle background texture */}
-      <div className="absolute inset-0 bg-gradient-to-b from-accent/40 via-background to-background" />
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-accent/20 to-background" />
       
       {/* Decorative thin lines */}
       <div className="absolute top-1/4 left-8 w-px h-32 bg-gradient-to-b from-transparent via-wedding-gold/30 to-transparent hidden md:block" />
