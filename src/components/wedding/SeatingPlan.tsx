@@ -416,6 +416,8 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       guests: [],
       x: 50,
       y: 50,
+      width: 160,
+      height: 70,
     };
     const updated = [...tables, newTable];
     setTables(updated);
