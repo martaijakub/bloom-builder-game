@@ -242,7 +242,11 @@ const TableVisual = ({
       {/* Table rectangle */}
       <div
         ref={tableRectRef}
-        className="bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative rounded-sm"
+        className={`border-2 flex items-center justify-center shadow-md relative rounded-sm transition-all duration-500 ${
+          highlighted
+            ? "bg-wedding-gold/20 border-wedding-gold ring-2 ring-wedding-gold/40 scale-105"
+            : "bg-wedding-warm border-wedding-gold/30"
+        }`}
         style={{ width, height }}
       >
         <div className="text-center">
