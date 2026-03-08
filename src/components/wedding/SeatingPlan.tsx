@@ -442,6 +442,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTable, setSelectedTable] = useState<TableData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
