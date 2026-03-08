@@ -1,9 +1,22 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { RefreshCw, X, ChevronLeft, ChevronRight, Image } from "lucide-react";
+import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter } from "lucide-react";
 
 const CLOUD_NAME = "dyz8kvmfn";
 const FOLDER = "wedding_guests_uploads";
+
+const TAG_FILTERS = [
+  { tag: "general", pl: "Ogólne", en: "General", icon: "📷" },
+  { tag: "most_interesting_toast", pl: "Toast", en: "Toast", icon: "🥂" },
+  { tag: "dancing_queen_king", pl: "Taniec", en: "Dancing", icon: "💃" },
+  { tag: "eating_cake__candid_shot_", pl: "Tort", en: "Cake", icon: "🍰" },
+  { tag: "newlyweds_kissing", pl: "Pocałunek", en: "Kiss", icon: "💏" },
+  { tag: "table_group_selfie", pl: "Selfie", en: "Selfie", icon: "🤪" },
+  { tag: "tears_of_joy__a_guest_", pl: "Wzruszenie", en: "Tears", icon: "🥲" },
+  { tag: "dancing_without_shoes", pl: "Bez butów", en: "No shoes", icon: "👠" },
+  { tag: "favorite_decor_detail", pl: "Dekoracje", en: "Decor", icon: "✨" },
+  { tag: "selfie_with_best_man_maid_of_honor", pl: "Ze świadkiem", en: "Best man", icon: "🤳" },
+];
 
 interface CloudinaryResource {
   public_id: string;
