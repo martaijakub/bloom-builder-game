@@ -218,7 +218,19 @@ const PhotoGallery = () => {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIndex, photos.length]);
+  }, [lightboxIndex, filteredPhotos.length]);
+
+  // Reset lightbox when filter changes
+  useEffect(() => {
+    setLightboxIndex(null);
+  }, [activeTag]);
+
+  const availableTags = useMemo(() => {
+    return TAG_FILTERS.filter((f) => {
+      if (photosByTag[f.tag]?.length) return true;
+      return photos.some((p) => p.tags?.includes(f.tag));
+    });
+  }, [photos, photosByTag]);
 
   return (
     <div className="mt-16">
@@ -236,6 +248,40 @@ const PhotoGallery = () => {
           {t("Odśwież", "Refresh")}
         </button>
       </div>
+
+      {/* Tag filters */}
+      {!loading && photos.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => setActiveTag(null)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 font-sans text-xs tracking-wide rounded-full border transition-all duration-200 ${
+              activeTag === null
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card/50 text-muted-foreground border-border/60 hover:border-wedding-gold/40 hover:text-foreground"
+            }`}
+          >
+            <Filter className="w-3 h-3" />
+            {t("Wszystkie", "All")} ({photos.length})
+          </button>
+          {availableTags.map((f) => {
+            const count = photosByTag[f.tag]?.length || photos.filter((p) => p.tags?.includes(f.tag)).length;
+            return (
+              <button
+                key={f.tag}
+                onClick={() => setActiveTag(activeTag === f.tag ? null : f.tag)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 font-sans text-xs tracking-wide rounded-full border transition-all duration-200 ${
+                  activeTag === f.tag
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card/50 text-muted-foreground border-border/60 hover:border-wedding-gold/40 hover:text-foreground"
+                }`}
+              >
+                <span>{f.icon}</span>
+                {t(f.pl, f.en)} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {loading && (
         <div className="text-center py-12">
@@ -263,31 +309,40 @@ const PhotoGallery = () => {
       {!loading && photos.length > 0 && (
         <>
           <p className="font-sans text-xs text-muted-foreground mb-4">
-            {photos.length} {t("zdjęć", "photos")}
+            {filteredPhotos.length} {t("zdjęć", "photos")}
+            {activeTag && ` · ${TAG_FILTERS.find((f) => f.tag === activeTag)?.icon || ""}`}
           </p>
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-            {photos.map((photo, i) => (
-              <button
-                key={photo.public_id}
-                onClick={() => openLightbox(i)}
-                className="aspect-square overflow-hidden border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
-              >
-                <img
-                  src={getImageUrl(photo.public_id)}
-                  alt={`Guest photo ${i + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
-              </button>
-            ))}
-          </div>
+          {filteredPhotos.length === 0 ? (
+            <div className="text-center py-8 border border-border/40 bg-card/30">
+              <p className="font-sans text-sm text-muted-foreground">
+                {t("Brak zdjęć w tej kategorii", "No photos in this category")}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+              {filteredPhotos.map((photo, i) => (
+                <button
+                  key={photo.public_id}
+                  onClick={() => openLightbox(i)}
+                  className="aspect-square overflow-hidden border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                >
+                  <img
+                    src={getImageUrl(photo.public_id)}
+                    alt={`Guest photo ${i + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
 
       {/* Lightbox */}
-      {lightboxIndex !== null && photos[lightboxIndex] && (
+      {lightboxIndex !== null && filteredPhotos[lightboxIndex] && (
         <LightboxOverlay
-          photos={photos}
+          photos={filteredPhotos}
           index={lightboxIndex}
           onClose={closeLightbox}
           onNext={goNext}
