@@ -486,6 +486,14 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
     setEditingTable(null);
   };
 
+  const updateTableGuests = useCallback((tableId: string, guests: Guest[]) => {
+    setTables((prev) => {
+      const updated = prev.map((t) => (t.id === tableId ? { ...t, guests } : t));
+      saveTables(updated);
+      return updated;
+    });
+  }, []);
+
   return (
     <div>
       {/* Admin toggle */}
