@@ -548,6 +548,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             onDragStart={handleDragStart}
             onEdit={setEditingTable}
             onDelete={deleteTable}
+            onUpdateGuests={updateTableGuests}
           />
         ))}
       </div>
