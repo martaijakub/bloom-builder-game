@@ -493,7 +493,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const saveEditedTable = (updated: TableData) => {
     const newTables = tables.map((t) => (t.id === updated.id ? updated : t));
     setTables(newTables);
-    saveTables(newTables);
+    saveAdminTables(newTables);
     setEditingTable(null);
   };
 
