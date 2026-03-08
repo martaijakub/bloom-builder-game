@@ -546,6 +546,30 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         )}
       </div>
 
+      {/* Guest search */}
+      {!isAdmin && (
+        <div className="relative max-w-sm mx-auto mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("Wyszukaj gościa…", "Search guest…")}
+            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border/60 font-sans text-sm focus:outline-none focus:border-wedding-gold transition-colors"
+          />
+          {searchQuery.trim().length >= 2 && (
+            <p className="font-sans text-xs text-muted-foreground mt-1.5 text-center">
+              {highlightedTableIds.length > 0
+                ? t(
+                    `Znaleziono przy ${highlightedTableIds.length} ${highlightedTableIds.length === 1 ? "stole" : "stołach"}`,
+                    `Found at ${highlightedTableIds.length} ${highlightedTableIds.length === 1 ? "table" : "tables"}`
+                  )
+                : t("Nie znaleziono gościa", "Guest not found")}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Floor plan */}
       <div
         ref={containerRef}
@@ -563,6 +587,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             key={table.id}
             table={table}
             isAdmin={isAdmin}
+            highlighted={highlightedTableIds.includes(table.id)}
             onDragStart={handleDragStart}
             onEdit={setEditingTable}
             onDelete={deleteTable}
