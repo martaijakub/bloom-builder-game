@@ -8,10 +8,21 @@ import TriPeaksSolitaire from "@/games/TriPeaksSolitaire";
 
 type GameView = "menu" | "memory" | "wordle" | "tripeaks";
 
+const isWeddingDay = (): boolean => {
+  const now = new Date();
+  const weddingDay = new Date("2026-08-08T00:00:00");
+  return (
+    now.getFullYear() === weddingDay.getFullYear() &&
+    now.getMonth() === weddingDay.getMonth() &&
+    now.getDate() === weddingDay.getDate()
+  );
+};
+
 const Games = () => {
   const [searchParams] = useSearchParams();
   const gameParam = searchParams.get("game");
   const [view, setView] = useState<GameView>("menu");
+  const disabledOnWeddingDay = isWeddingDay();
 
   useEffect(() => {
     if (gameParam === "memory") setView("memory");
