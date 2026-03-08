@@ -170,45 +170,13 @@ const PhotoGallery = () => {
 
       {/* Lightbox */}
       {lightboxIndex !== null && photos[lightboxIndex] && (
-        <div
-          className="fixed inset-0 z-[5000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={closeLightbox}
-        >
-          <button
-            onClick={closeLightbox}
-            className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          {photos.length > 1 && (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-4 text-white/70 hover:text-white z-10"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-4 text-white/70 hover:text-white z-10"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            </>
-          )}
-
-          <img
-            src={getFullUrl(photos[lightboxIndex].public_id)}
-            alt={`Photo ${lightboxIndex + 1}`}
-            className="max-w-full max-h-[85vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          <div className="absolute bottom-4 text-white/60 font-sans text-xs">
-            {lightboxIndex + 1} / {photos.length}
-          </div>
-        </div>
+        <LightboxOverlay
+          photos={photos}
+          index={lightboxIndex}
+          onClose={closeLightbox}
+          onNext={goNext}
+          onPrev={goPrev}
+        />
       )}
     </div>
   );
