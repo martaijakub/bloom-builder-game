@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search } from "lucide-react";
 
 // ---- Types ----
 interface Guest {
@@ -177,6 +177,7 @@ const xyToPerimeter = (mx: number, my: number, w: number, h: number): number => 
 const TableVisual = ({
   table,
   isAdmin,
+  highlighted,
   onDragStart,
   onEdit,
   onDelete,
@@ -184,6 +185,7 @@ const TableVisual = ({
 }: {
   table: TableData;
   isAdmin: boolean;
+  highlighted?: boolean;
   onDragStart?: (e: React.MouseEvent, id: string) => void;
   onEdit?: (table: TableData) => void;
   onDelete?: (id: string) => void;
@@ -240,7 +242,11 @@ const TableVisual = ({
       {/* Table rectangle */}
       <div
         ref={tableRectRef}
-        className="bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative rounded-sm"
+        className={`border-2 flex items-center justify-center shadow-md relative rounded-sm transition-all duration-500 ${
+          highlighted
+            ? "bg-wedding-gold/20 border-wedding-gold ring-2 ring-wedding-gold/40 scale-105"
+            : "bg-wedding-warm border-wedding-gold/30"
+        }`}
         style={{ width, height }}
       >
         <div className="text-center">
@@ -423,10 +429,22 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [adminMode, setAdminMode] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
   const isAdmin = adminMode || !!isAdminProp;
+
+  // Find table IDs matching the search query
+  const highlightedTableIds = searchQuery.trim().length >= 2
+    ? tables
+        .filter((t) =>
+          t.guests.some((g) =>
+            g.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+          )
+        )
+        .map((t) => t.id)
+    : [];
 
   const handleDragStart = useCallback((e: React.MouseEvent, tableId: string) => {
     if (!isAdmin) return;
@@ -528,6 +546,30 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         )}
       </div>
 
+      {/* Guest search */}
+      {!isAdmin && (
+        <div className="relative max-w-sm mx-auto mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("Wyszukaj gościa…", "Search guest…")}
+            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border/60 font-sans text-sm focus:outline-none focus:border-wedding-gold transition-colors"
+          />
+          {searchQuery.trim().length >= 2 && (
+            <p className="font-sans text-xs text-muted-foreground mt-1.5 text-center">
+              {highlightedTableIds.length > 0
+                ? t(
+                    `Znaleziono przy ${highlightedTableIds.length} ${highlightedTableIds.length === 1 ? "stole" : "stołach"}`,
+                    `Found at ${highlightedTableIds.length} ${highlightedTableIds.length === 1 ? "table" : "tables"}`
+                  )
+                : t("Nie znaleziono gościa", "Guest not found")}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Floor plan */}
       <div
         ref={containerRef}
@@ -545,6 +587,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             key={table.id}
             table={table}
             isAdmin={isAdmin}
+            highlighted={highlightedTableIds.includes(table.id)}
             onDragStart={handleDragStart}
             onEdit={setEditingTable}
             onDelete={deleteTable}
