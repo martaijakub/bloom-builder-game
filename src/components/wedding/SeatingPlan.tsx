@@ -1,84 +1,56 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download } from "lucide-react";
+import seatingData from "@/data/seatingPlan.json";
 
 // ---- Types ----
 interface Guest {
   id: string;
   name: string;
-  perimeterPos?: number; // 0-1 position along perimeter (optional, auto-distributed if missing)
+  perimeterPos?: number;
 }
 
 interface TableData {
   id: string;
   label: string;
   guests: Guest[];
-  x: number; // percentage position
+  x: number;
   y: number;
-  width: number; // width in pixels
-  height: number; // height in pixels
+  width: number;
+  height: number;
 }
 
-// ---- Default data ----
-const DEFAULT_TABLES: TableData[] = [
-  {
-    id: "t1", label: "Stół 1", x: 50, y: 15, width: 180, height: 80,
-    guests: [
-      { id: "g1", name: "Rodzice Panny Młodej" },
-      { id: "g2", name: "Rodzice Pana Młodego" },
-      { id: "g3", name: "Świadkowa" },
-      { id: "g4", name: "Świadek" },
-    ],
-  },
-  {
-    id: "t2", label: "Stół 2", x: 25, y: 45, width: 160, height: 70,
-    guests: [
-      { id: "g5", name: "Anna & Tomek" },
-      { id: "g6", name: "Kasia & Paweł" },
-      { id: "g7", name: "Magda & Michał" },
-      { id: "g8", name: "Ola & Bartek" },
-    ],
-  },
-  {
-    id: "t3", label: "Stół 3", x: 75, y: 45, width: 160, height: 70,
-    guests: [
-      { id: "g9", name: "Marco & Elena" },
-      { id: "g10", name: "Luka & Mila" },
-      { id: "g11", name: "Stefan & Ana" },
-    ],
-  },
-  {
-    id: "t4", label: "Stół 4", x: 25, y: 75, width: 160, height: 70,
-    guests: [
-      { id: "g12", name: "Ewa & Jan" },
-      { id: "g13", name: "Zosia & Marek" },
-      { id: "g14", name: "Beata & Robert" },
-      { id: "g15", name: "Dorota & Adam" },
-    ],
-  },
-  {
-    id: "t5", label: "Stół 5", x: 75, y: 75, width: 160, height: 70,
-    guests: [
-      { id: "g16", name: "Piotr & Agata" },
-      { id: "g17", name: "Kamil & Natalia" },
-      { id: "g18", name: "Łukasz & Weronika" },
-    ],
-  },
-];
-
-const STORAGE_KEY = "wedding_seating_plan";
+const STORAGE_KEY = "wedding_seating_plan_admin";
 const ADMIN_PASS = "ADMIN2026";
 
-function loadTables(): TableData[] {
+// Guests always see the JSON file data
+function getPublicTables(): TableData[] {
+  return seatingData as TableData[];
+}
+
+// Admin loads from localStorage (draft), falls back to JSON
+function loadAdminTables(): TableData[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
-  return DEFAULT_TABLES;
+  return seatingData as TableData[];
 }
 
-function saveTables(tables: TableData[]) {
+function saveAdminTables(tables: TableData[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tables));
+}
+
+// Export current admin layout as JSON for copying into seatingPlan.json
+function exportTablesJSON(tables: TableData[]) {
+  const json = JSON.stringify(tables, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "seatingPlan.json";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ---- Admin password modal ----
