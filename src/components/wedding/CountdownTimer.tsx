@@ -118,7 +118,7 @@ const CountdownTimer = () => {
           {t("Odliczanie", "Countdown")}
         </h2>
 
-        <div className="flex justify-center items-center gap-3 md:gap-6">
+        <div className="flex justify-center items-center gap-1.5 sm:gap-3 md:gap-6">
           <TimeUnit value={timeLeft.days} prevValue={prevTimeLeft.current.days} label={t("Dni", "Days")} delay={0} />
           <PulseDot />
           <TimeUnit value={timeLeft.hours} prevValue={prevTimeLeft.current.hours} label={t("Godziny", "Hours")} delay={100} />
