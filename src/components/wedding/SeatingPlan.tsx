@@ -137,56 +137,97 @@ const AdminLoginModal = ({
 };
 
 // ---- Rectangle table visual component ----
+const perimeterToXY = (pos: number, w: number, h: number): { x: number; y: number } => {
+  const perimeter = 2 * (w + h);
+  let dist = ((pos % 1) + 1) % 1 * perimeter; // normalize to 0-perimeter
+  if (dist < w) {
+    return { x: dist - w / 2, y: -h / 2 - 22 };
+  } else if (dist < w + h) {
+    return { x: w / 2 + 22, y: (dist - w) - h / 2 };
+  } else if (dist < 2 * w + h) {
+    return { x: w / 2 - (dist - w - h), y: h / 2 + 22 };
+  } else {
+    return { x: -w / 2 - 22, y: h / 2 - (dist - 2 * w - h) };
+  }
+};
+
+const xyToPerimeter = (mx: number, my: number, w: number, h: number): number => {
+  // Project mouse position (relative to table center) onto nearest perimeter point
+  const perimeter = 2 * (w + h);
+  // Clamp to edges and find closest edge
+  const halfW = w / 2, halfH = h / 2;
+  const candidates: { dist: number; perim: number }[] = [];
+  // Top edge
+  const tx = Math.max(-halfW, Math.min(halfW, mx));
+  candidates.push({ dist: (tx - mx) ** 2 + (-halfH - my) ** 2, perim: tx + halfW });
+  // Right edge
+  const ry = Math.max(-halfH, Math.min(halfH, my));
+  candidates.push({ dist: (halfW - mx) ** 2 + (ry - my) ** 2, perim: w + (ry + halfH) });
+  // Bottom edge
+  const bx = Math.max(-halfW, Math.min(halfW, mx));
+  candidates.push({ dist: (bx - mx) ** 2 + (halfH - my) ** 2, perim: w + h + (halfW - bx) });
+  // Left edge
+  const ly = Math.max(-halfH, Math.min(halfH, my));
+  candidates.push({ dist: (-halfW - mx) ** 2 + (ly - my) ** 2, perim: 2 * w + h + (halfH - ly) });
+  
+  candidates.sort((a, b) => a.dist - b.dist);
+  return candidates[0].perim / perimeter;
+};
+
 const TableVisual = ({
   table,
   isAdmin,
   onDragStart,
   onEdit,
   onDelete,
+  onUpdateGuests,
 }: {
   table: TableData;
   isAdmin: boolean;
   onDragStart?: (e: React.MouseEvent, id: string) => void;
   onEdit?: (table: TableData) => void;
   onDelete?: (id: string) => void;
+  onUpdateGuests?: (tableId: string, guests: Guest[]) => void;
 }) => {
   const { t } = useLang();
   const guestCount = table.guests.length;
   const { width, height } = table;
+  const tableRectRef = useRef<HTMLDivElement>(null);
 
-  // Distribute guests around the rectangle perimeter
-  const getGuestPositions = () => {
-    const positions: { x: number; y: number }[] = [];
-    const perimeter = 2 * (width + height);
-    const spacing = perimeter / guestCount;
+  // Ensure all guests have perimeterPos
+  const guestsWithPos = table.guests.map((g, i) => ({
+    ...g,
+    perimeterPos: g.perimeterPos ?? (guestCount > 0 ? i / guestCount : 0),
+  }));
 
-    for (let i = 0; i < guestCount; i++) {
-      let dist = i * spacing;
-      let x = 0, y = 0;
+  const handleSeatDragStart = useCallback((e: React.MouseEvent, guestId: string) => {
+    if (!isAdmin || !tableRectRef.current) return;
+    e.preventDefault();
+    e.stopPropagation();
 
-      if (dist < width) {
-        // Top edge
-        x = dist - width / 2;
-        y = -height / 2 - 20;
-      } else if (dist < width + height) {
-        // Right edge
-        x = width / 2 + 20;
-        y = (dist - width) - height / 2;
-      } else if (dist < 2 * width + height) {
-        // Bottom edge
-        x = width / 2 - (dist - width - height);
-        y = height / 2 + 20;
-      } else {
-        // Left edge
-        x = -width / 2 - 20;
-        y = height / 2 - (dist - 2 * width - height);
-      }
-      positions.push({ x, y });
-    }
-    return positions;
-  };
+    const onMove = (me: MouseEvent) => {
+      if (!tableRectRef.current) return;
+      const rect = tableRectRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const mx = me.clientX - cx;
+      const my = me.clientY - cy;
+      const newPos = xyToPerimeter(mx, my, width, height);
+      
+      const updated = guestsWithPos.map((g) =>
+        g.id === guestId ? { ...g, perimeterPos: newPos } : g
+      );
+      onUpdateGuests?.(table.id, updated);
+    };
 
-  const guestPositions = getGuestPositions();
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, [isAdmin, width, height, guestsWithPos, table.id, onUpdateGuests]);
 
   return (
     <div
@@ -198,6 +239,7 @@ const TableVisual = ({
     >
       {/* Table rectangle */}
       <div
+        ref={tableRectRef}
         className="bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative rounded-sm"
         style={{ width, height }}
       >
@@ -207,19 +249,24 @@ const TableVisual = ({
         </div>
 
         {/* Guest seats around the table */}
-        {table.guests.map((guest, i) => {
-          const pos = guestPositions[i];
+        {guestsWithPos.map((guest) => {
+          const pos = perimeterToXY(guest.perimeterPos, width, height);
           return (
             <div
               key={guest.id}
-              className="absolute flex items-center justify-center"
+              className={`absolute flex items-center justify-center ${
+                isAdmin ? "cursor-grab active:cursor-grabbing z-10 hover:z-20" : ""
+              }`}
               style={{
                 left: `calc(50% + ${pos.x}px)`,
                 top: `calc(50% + ${pos.y}px)`,
                 transform: "translate(-50%, -50%)",
               }}
+              onMouseDown={isAdmin ? (e) => handleSeatDragStart(e, guest.id) : undefined}
             >
-              <div className="bg-card border border-border/60 rounded px-2 py-0.5 shadow-sm whitespace-nowrap">
+              <div className={`bg-card border rounded px-2 py-0.5 shadow-sm whitespace-nowrap transition-shadow ${
+                isAdmin ? "border-primary/40 hover:shadow-md hover:border-primary" : "border-border/60"
+              }`}>
                 <span className="font-sans text-[9px] text-foreground">{guest.name}</span>
               </div>
             </div>
