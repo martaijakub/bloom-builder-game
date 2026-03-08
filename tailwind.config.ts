@@ -125,6 +125,8 @@ export default {
         "pop-in": "pop-in 0.3s ease-out",
         "shake": "shake 0.5s ease-in-out",
         "bounce-in": "bounce-in 0.5s ease-out",
+        "flip-in": "flip-in 0.4s ease-out",
+        "fade-up": "fade-up 0.6s ease-out",
       },
     },
   },
