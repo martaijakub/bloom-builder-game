@@ -500,7 +500,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const updateTableGuests = useCallback((tableId: string, guests: Guest[]) => {
     setTables((prev) => {
       const updated = prev.map((t) => (t.id === tableId ? { ...t, guests } : t));
-      saveTables(updated);
+      saveAdminTables(updated);
       return updated;
     });
   }, []);
