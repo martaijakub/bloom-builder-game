@@ -260,6 +260,8 @@ const TableEditor = ({
   const { t } = useLang();
   const [label, setLabel] = useState(table.label);
   const [guests, setGuests] = useState<Guest[]>([...table.guests]);
+  const [width, setWidth] = useState(table.width);
+  const [height, setHeight] = useState(table.height);
 
   const addGuest = () => {
     setGuests([...guests, { id: `g_${Date.now()}`, name: "" }]);
@@ -274,7 +276,7 @@ const TableEditor = ({
   };
 
   const handleSave = () => {
-    onSave({ ...table, label, guests: guests.filter((g) => g.name.trim()) });
+    onSave({ ...table, label, guests: guests.filter((g) => g.name.trim()), width, height });
   };
 
   return (
@@ -294,6 +296,36 @@ const TableEditor = ({
           onChange={(e) => setLabel(e.target.value)}
           className="w-full px-3 py-2 bg-background border border-border font-sans text-sm mb-5 focus:outline-none focus:border-wedding-gold"
         />
+
+        {/* Size controls */}
+        <div className="grid grid-cols-2 gap-4 mb-5">
+          <div>
+            <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+              {t("Szerokość", "Width")} ({width}px)
+            </label>
+            <input
+              type="range"
+              min="100"
+              max="300"
+              value={width}
+              onChange={(e) => setWidth(Number(e.target.value))}
+              className="w-full accent-primary"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+              {t("Wysokość", "Height")} ({height}px)
+            </label>
+            <input
+              type="range"
+              min="50"
+              max="150"
+              value={height}
+              onChange={(e) => setHeight(Number(e.target.value))}
+              className="w-full accent-primary"
+            />
+          </div>
+        </div>
 
         <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
           {t("Goście", "Guests")}
