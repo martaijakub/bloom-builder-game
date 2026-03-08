@@ -1,14 +1,20 @@
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
+import { useState } from "react";
+import { MapPin } from "lucide-react";
 
 interface EventCardProps {
   titlePl: string;
   titleEn: string;
   lines: { pl: string; en: string; accent?: boolean; subtle?: boolean }[];
+  mapUrl?: string;
+  directionsUrl?: string;
 }
 
-const EventCard = ({ titlePl, titleEn, lines }: EventCardProps) => {
+const EventCard = ({ titlePl, titleEn, lines, mapUrl, directionsUrl }: EventCardProps) => {
   const { t } = useLang();
+  const [showMap, setShowMap] = useState(false);
+
   return (
     <div className="reveal-child group">
       <div className="border border-border/60 bg-card/50 backdrop-blur-sm p-8 md:p-10 transition-all duration-500 hover:border-wedding-gold/40 hover:bg-card">
@@ -30,6 +36,45 @@ const EventCard = ({ titlePl, titleEn, lines }: EventCardProps) => {
             {t(line.pl, line.en)}
           </p>
         ))}
+
+        {mapUrl && (
+          <div className="mt-5">
+            <button
+              onClick={() => setShowMap(!showMap)}
+              className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 transition-colors uppercase tracking-wider"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              {showMap ? t("Ukryj mapę", "Hide map") : t("Pokaż mapę", "Show map")}
+            </button>
+
+            {showMap && (
+              <div className="mt-3 rounded overflow-hidden border border-border/40 animate-fade-up">
+                <iframe
+                  src={mapUrl}
+                  width="100%"
+                  height="200"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={t(titlePl, titleEn)}
+                />
+              </div>
+            )}
+
+            {directionsUrl && (
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 mt-2 font-sans text-[11px] text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+              >
+                <MapPin className="w-3 h-3" />
+                {t("Nawiguj", "Get directions")} →
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -47,6 +92,8 @@ const Schedule = () => {
         { pl: "Kościół św. Jakuba", en: "St. James Church", subtle: true },
         { pl: "Oliwa, Gdańsk", en: "Oliwa, Gdansk" },
       ],
+      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2318.5!2d18.5556!3d54.4103!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd0a1a2a7e0001%3A0x4e0b9c71e57e9b0!2sKo%C5%9Bci%C3%B3%C5%82%20%C5%9Bw.%20Jakuba%20Aposto%C5%82a!5e0!3m2!1spl!2spl!4v1700000000000",
+      directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Kościół+św.+Jakuba+Oliwa+Gdańsk",
     },
     {
       titlePl: "Wesele", titleEn: "Reception",
@@ -55,6 +102,8 @@ const Schedule = () => {
         { pl: "Restauracja Tabun", en: "Tabun Restaurant", subtle: true },
         { pl: "ul. Konna 29, Otomin, Gdańsk", en: "29 Konna Street, Otomin, Gdansk" },
       ],
+      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2320.0!2d18.5280!3d54.3680!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd744db9d1c64f%3A0x4b8a1d3f1c8f1c0a!2sRestauracja%20Tabun!5e0!3m2!1spl!2spl!4v1700000000000",
+      directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Restauracja+Tabun+Otomin+Gdańsk",
     },
     {
       titlePl: "Dress code", titleEn: "Dress Code",
