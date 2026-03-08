@@ -177,6 +177,7 @@ const xyToPerimeter = (mx: number, my: number, w: number, h: number): number => 
 const TableVisual = ({
   table,
   isAdmin,
+  highlighted,
   onDragStart,
   onEdit,
   onDelete,
@@ -184,6 +185,7 @@ const TableVisual = ({
 }: {
   table: TableData;
   isAdmin: boolean;
+  highlighted?: boolean;
   onDragStart?: (e: React.MouseEvent, id: string) => void;
   onEdit?: (table: TableData) => void;
   onDelete?: (id: string) => void;
