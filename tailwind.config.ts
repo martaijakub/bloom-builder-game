@@ -58,6 +58,7 @@ export default {
           ivory: "hsl(var(--wedding-ivory))",
           sage: "hsl(var(--wedding-sage))",
           warm: "hsl(var(--wedding-warm))",
+          blush: "hsl(var(--wedding-blush))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
