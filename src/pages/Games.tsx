@@ -68,50 +68,67 @@ const Games = () => {
         Baw się dobrze czekając na wielki dzień! / Have fun while waiting for the big day!
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
-        <button
-          onClick={() => setView("memory")}
-          className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
-        >
-          <div className="text-5xl mb-4">🃏</div>
-          <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
-            Memory Match
-          </h2>
-          <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-            Odwracaj karty i znajdź wszystkie ślubne pary! Ile ruchów potrzebujesz?
+      {disabledOnWeddingDay ? (
+        <div className="border border-wedding-gold/40 bg-wedding-gold/5 p-10 text-center rounded-lg max-w-md">
+          <p className="font-sans text-lg text-foreground mb-2">
+            🎉 Dziś jest wielki dzień! 🎉
           </p>
-        </button>
+          <p className="font-sans text-sm text-muted-foreground mb-6">
+            Gry są wyłączone podczas przyjęcia. Baw się z nami!
+          </p>
+          <Link
+            to="/"
+            className="inline-block font-sans text-sm text-primary hover:underline"
+          >
+            ← Wróć na stronę główną
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
+          <button
+            onClick={() => setView("memory")}
+            className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
+          >
+            <div className="text-5xl mb-4">🃏</div>
+            <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
+              Memory Match
+            </h2>
+            <p className="font-sans text-sm text-muted-foreground leading-relaxed">
+              Odwracaj karty i znajdź wszystkie ślubne pary! Ile ruchów potrzebujesz?
+            </p>
+          </button>
 
-        <button
-          onClick={() => setView("wordle")}
-          className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
-        >
-          <div className="text-5xl mb-4">🔤</div>
-          <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
-            Wedding Wordle
-          </h2>
-          <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-            Odgadnij ślubne słowo w 6 próbach! 🇵🇱 🇮🇹 🇷🇸
-          </p>
-        </button>
+          <button
+            onClick={() => setView("wordle")}
+            className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
+          >
+            <div className="text-5xl mb-4">🔤</div>
+            <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
+              Wedding Wordle
+            </h2>
+            <p className="font-sans text-sm text-muted-foreground leading-relaxed">
+              Odgadnij ślubne słowo w 6 próbach! 🇵🇱 🇮🇹 🇷🇸
+            </p>
+          </button>
 
-        <button
-          onClick={() => setView("tripeaks")}
-          className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
-        >
-          <div className="text-5xl mb-4">🏔️</div>
-          <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
-            TriPeaks Solitaire
-          </h2>
-          <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-            Klasyczny pasjans TriPeaks w ślubnym stylu! Buduj serie i zdobywaj punkty!
-          </p>
-        </button>
-      </div>
+          <button
+            onClick={() => setView("tripeaks")}
+            className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
+          >
+            <div className="text-5xl mb-4">🏔️</div>
+            <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
+              TriPeaks Solitaire
+            </h2>
+            <p className="font-sans text-sm text-muted-foreground leading-relaxed">
+              Klasyczny pasjans TriPeaks w ślubnym stylu! Buduj serie i zdobywaj punkty!
+            </p>
+          </button>
+        </div>
+      )}
 
       <Link
         to="/"
-        className="mt-10 font-sans text-sm text-primary hover:underline"
+        className={`font-sans text-sm text-primary hover:underline ${disabledOnWeddingDay ? "hidden" : "mt-10"}`}
       >
         ← Wróć na stronę główną / Back to main page
       </Link>
