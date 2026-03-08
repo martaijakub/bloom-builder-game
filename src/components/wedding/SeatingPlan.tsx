@@ -6,6 +6,7 @@ import { Lock, Settings, Save, X, Plus, Trash2, GripVertical } from "lucide-reac
 interface Guest {
   id: string;
   name: string;
+  perimeterPos?: number; // 0-1 position along perimeter (optional, auto-distributed if missing)
 }
 
 interface TableData {
