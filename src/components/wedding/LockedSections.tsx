@@ -3,6 +3,7 @@ import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
 import { Calendar, Upload, Share2, X } from "lucide-react";
 import SeatingPlan from "./SeatingPlan";
+import PhotoGallery from "./PhotoGallery";
 
 declare global {
   interface Window {
