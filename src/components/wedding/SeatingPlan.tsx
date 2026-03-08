@@ -14,12 +14,14 @@ interface TableData {
   guests: Guest[];
   x: number; // percentage position
   y: number;
+  width: number; // width in pixels
+  height: number; // height in pixels
 }
 
 // ---- Default data ----
 const DEFAULT_TABLES: TableData[] = [
   {
-    id: "t1", label: "Stół 1", x: 50, y: 15,
+    id: "t1", label: "Stół 1", x: 50, y: 15, width: 180, height: 80,
     guests: [
       { id: "g1", name: "Rodzice Panny Młodej" },
       { id: "g2", name: "Rodzice Pana Młodego" },
@@ -28,7 +30,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t2", label: "Stół 2", x: 25, y: 45,
+    id: "t2", label: "Stół 2", x: 25, y: 45, width: 160, height: 70,
     guests: [
       { id: "g5", name: "Anna & Tomek" },
       { id: "g6", name: "Kasia & Paweł" },
@@ -37,7 +39,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t3", label: "Stół 3", x: 75, y: 45,
+    id: "t3", label: "Stół 3", x: 75, y: 45, width: 160, height: 70,
     guests: [
       { id: "g9", name: "Marco & Elena" },
       { id: "g10", name: "Luka & Mila" },
@@ -45,7 +47,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t4", label: "Stół 4", x: 25, y: 75,
+    id: "t4", label: "Stół 4", x: 25, y: 75, width: 160, height: 70,
     guests: [
       { id: "g12", name: "Ewa & Jan" },
       { id: "g13", name: "Zosia & Marek" },
@@ -54,7 +56,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t5", label: "Stół 5", x: 75, y: 75,
+    id: "t5", label: "Stół 5", x: 75, y: 75, width: 160, height: 70,
     guests: [
       { id: "g16", name: "Piotr & Agata" },
       { id: "g17", name: "Kamil & Natalia" },
@@ -133,7 +135,7 @@ const AdminLoginModal = ({
   );
 };
 
-// ---- Round table visual component ----
+// ---- Rectangle table visual component ----
 const TableVisual = ({
   table,
   isAdmin,
@@ -149,7 +151,41 @@ const TableVisual = ({
 }) => {
   const { t } = useLang();
   const guestCount = table.guests.length;
-  const radius = Math.max(55, 38 + guestCount * 5);
+  const { width, height } = table;
+
+  // Distribute guests around the rectangle perimeter
+  const getGuestPositions = () => {
+    const positions: { x: number; y: number }[] = [];
+    const perimeter = 2 * (width + height);
+    const spacing = perimeter / guestCount;
+
+    for (let i = 0; i < guestCount; i++) {
+      let dist = i * spacing;
+      let x = 0, y = 0;
+
+      if (dist < width) {
+        // Top edge
+        x = dist - width / 2;
+        y = -height / 2 - 20;
+      } else if (dist < width + height) {
+        // Right edge
+        x = width / 2 + 20;
+        y = (dist - width) - height / 2;
+      } else if (dist < 2 * width + height) {
+        // Bottom edge
+        x = width / 2 - (dist - width - height);
+        y = height / 2 + 20;
+      } else {
+        // Left edge
+        x = -width / 2 - 20;
+        y = height / 2 - (dist - 2 * width - height);
+      }
+      positions.push({ x, y });
+    }
+    return positions;
+  };
+
+  const guestPositions = getGuestPositions();
 
   return (
     <div
@@ -159,10 +195,10 @@ const TableVisual = ({
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
     >
-      {/* Table circle */}
+      {/* Table rectangle */}
       <div
-        className="rounded-full bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative"
-        style={{ width: radius * 2, height: radius * 2 }}
+        className="bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative rounded-sm"
+        style={{ width, height }}
       >
         <div className="text-center">
           <p className="font-serif text-sm font-medium text-foreground leading-tight">{table.label}</p>
@@ -171,22 +207,18 @@ const TableVisual = ({
 
         {/* Guest seats around the table */}
         {table.guests.map((guest, i) => {
-          const angle = (i / guestCount) * Math.PI * 2 - Math.PI / 2;
-          const seatRadius = radius + 22;
-          const sx = Math.cos(angle) * seatRadius;
-          const sy = Math.sin(angle) * seatRadius;
-
+          const pos = guestPositions[i];
           return (
             <div
               key={guest.id}
               className="absolute flex items-center justify-center"
               style={{
-                left: `calc(50% + ${sx}px)`,
-                top: `calc(50% + ${sy}px)`,
+                left: `calc(50% + ${pos.x}px)`,
+                top: `calc(50% + ${pos.y}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <div className="bg-card border border-border/60 rounded-full px-2 py-0.5 shadow-sm whitespace-nowrap">
+              <div className="bg-card border border-border/60 rounded px-2 py-0.5 shadow-sm whitespace-nowrap">
                 <span className="font-sans text-[9px] text-foreground">{guest.name}</span>
               </div>
             </div>
@@ -228,6 +260,8 @@ const TableEditor = ({
   const { t } = useLang();
   const [label, setLabel] = useState(table.label);
   const [guests, setGuests] = useState<Guest[]>([...table.guests]);
+  const [width, setWidth] = useState(table.width);
+  const [height, setHeight] = useState(table.height);
 
   const addGuest = () => {
     setGuests([...guests, { id: `g_${Date.now()}`, name: "" }]);
@@ -242,7 +276,7 @@ const TableEditor = ({
   };
 
   const handleSave = () => {
-    onSave({ ...table, label, guests: guests.filter((g) => g.name.trim()) });
+    onSave({ ...table, label, guests: guests.filter((g) => g.name.trim()), width, height });
   };
 
   return (
@@ -262,6 +296,36 @@ const TableEditor = ({
           onChange={(e) => setLabel(e.target.value)}
           className="w-full px-3 py-2 bg-background border border-border font-sans text-sm mb-5 focus:outline-none focus:border-wedding-gold"
         />
+
+        {/* Size controls */}
+        <div className="grid grid-cols-2 gap-4 mb-5">
+          <div>
+            <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+              {t("Szerokość", "Width")} ({width}px)
+            </label>
+            <input
+              type="range"
+              min="100"
+              max="300"
+              value={width}
+              onChange={(e) => setWidth(Number(e.target.value))}
+              className="w-full accent-primary"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+              {t("Wysokość", "Height")} ({height}px)
+            </label>
+            <input
+              type="range"
+              min="50"
+              max="150"
+              value={height}
+              onChange={(e) => setHeight(Number(e.target.value))}
+              className="w-full accent-primary"
+            />
+          </div>
+        </div>
 
         <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
           {t("Goście", "Guests")}
@@ -352,6 +416,8 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       guests: [],
       x: 50,
       y: 50,
+      width: 160,
+      height: 70,
     };
     const updated = [...tables, newTable];
     setTables(updated);
