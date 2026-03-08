@@ -487,7 +487,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const deleteTable = (id: string) => {
     const updated = tables.filter((t) => t.id !== id);
     setTables(updated);
-    saveTables(updated);
+    saveAdminTables(updated);
   };
 
   const saveEditedTable = (updated: TableData) => {
