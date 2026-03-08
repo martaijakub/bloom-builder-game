@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marta & Jakub - 08.08.2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #d4a5a5;
+            --color-dark: #2c2c2c;
+            --color-light: #f9f7f4;
+            --color-accent: #8b9d83;
+            --color-text: #444;
+            --font-serif: 'Georgia', 'Garamond', serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            background-color: var(--color-light);
+            line-height: 1.6;
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .lang-btn:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        /* Navigation */
+		nav {
+			position: sticky;
+			top: 0;
+			background: white;
+			padding: 15px 0;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+			z-index: 1000;
+		}
+
+/* Przycisk Hamburgera (domyślnie ukryty) */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+	z-index:1100;
+}
+
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--color-dark);
+    transition: 0.3s;
+}
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--color-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f9f7f4 0%, #f5f1ed 100%);
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--color-primary), transparent);
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: 72px;
+            font-weight: 400;
+            color: var(--color-dark);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .hero .names {
+            font-family: var(--font-serif);
+            font-size: 48px;
+            color: var(--color-primary);
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .heart {
+            color: var(--color-primary);
+            font-size: 28px;
+            display: inline-block;
+            margin: 0 15px;
+            animation: beat 1.5s infinite;
+        }
+
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .hero .date-location {
+            font-size: 18px;
+            color: var(--color-text);
+            margin: 20px 0;
+            letter-spacing: 1px;
+        }
+
+        .hero .location-detail {
+            font-size: 16px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-family: var(--font-serif);
+            font-size: 48px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 60px;
+            color: var(--color-dark);
+            letter-spacing: 1px;
+        }
+
+        /* About/Story Section */
+        .story-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--color-text);
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Timeline/Schedule */
+        .schedule {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .event-card {
+            background: white;
+            padding: 40px 30px;
+            border-left: 4px solid var(--color-primary);
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .event-card h3 {
+            font-family: var(--font-serif);
+            font-size: 24px;
+            color: var(--color-dark);
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .event-time {
+            color: var(--color-primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .event-location {
+            color: var(--color-accent);
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .event-address {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* RSVP Section */
+        .rsvp-section {
+            background: white;
+            padding: 60px;
+            border-radius: 4px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .rsvp-section h2 {
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--color-dark);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label small {
+            font-weight: 400;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: var(--font-sans);
+            font-size: 16px;
+            color: var(--color-text);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(212, 165, 165, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-divider {
+            margin: 40px 0 30px 0;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .form-divider h3 {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            color: var(--color-dark);
+            margin-bottom: 5px;
+            font-weight: 400;
+        }
+
+        .form-divider p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+
+        .submit-btn {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #c29595;
+        }
+
+        .submit-btn:active {
+            background-color: #b08585;
+        }
+
+        /* Accommodations Section */
+        .accommodations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .hotel-card {
+            background: white;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .hotel-card h3 {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            color: var(--color-dark);
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .hotel-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .hotel-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .hotel-link:hover {
+            color: var(--color-accent);
+        }
+
+        /* Things to Do Section */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .activity-card {
+            background: white;
+            padding: 30px;
+            border-radius: 4px;
+            border-top: 3px solid var(--color-accent);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .activity-card h3 {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            color: var(--color-dark);
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .activity-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--color-dark);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        footer .heart {
+            color: var(--color-primary);
+        }
+
+        /* Hidden content for language switching */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero .names {
+                font-size: 32px;
+            }
+    .menu-toggle {
+        display: flex; /* Pokazujemy hamburgera */
+    }
+                nav ul {
+        display: none; /* Chowamy listę */
+        flex-direction: column;
+        background: white;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        padding: 20px 0;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        gap: 0;
+		border-top: 1px solid #eee;
+    }
+    nav ul.active {
+        display: flex;
+    }
+	    nav ul li {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid #f9f9f9;
+    }
+    nav a {
+        display: block;
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+
+            section {
+                padding: 60px 20px;
+            }
+
+            section h2 {
+                font-size: 32px;
+            }
+
+            .rsvp-section {
+                padding: 40px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .language-toggle {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                min-height: auto;
+                padding: 40px 20px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .names {
+                font-size: 24px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            section {
+                padding: 40px 15px;
+            }
+
+            section h2 {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+		/* Style dla zablokowanych linków */
+.locked-link {
+    color: #999 !important; /* Szary kolor */
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.locked-link:hover {
+    color: #666 !important;
+}
+.unlocked-link {
+    color: var(--color-primary) !important; /* Odblokowany kolor */
+    font-weight: bold;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: white; padding: 40px; border-radius: 8px; text-align: center; position: relative;
+    max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.close-modal {
+    position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: #888;
+}
+
+/* Challenge Cards */
+.challenge-card {
+    background: white; border: 1px solid #eee; padding: 20px; text-align: center;
+    border-radius: 8px; transition: transform 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.challenge-card:hover { transform: translateY(-5px); border-color: var(--color-primary); }
+.challenge-card .icon { font-size: 40px; margin-bottom: 10px; }
+
+    </style>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+    (function() {
+        emailjs.init({
+            publicKey: "MmXQul_uJJvS260l9",
+        });
+    })();
+</script>
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button class="lang-btn active" onclick="switchLanguage('pl')">PL</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+    </div>
+
+    <!-- Navigation -->
+<nav>
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <ul id="nav-menu">
+        <li><a href="#home" class="nav-link" data-pl="Strona główna" data-en="Home">Strona główna</a></li>
+        <li><a href="#schedule" class="nav-link" data-pl="O wydarzeniu" data-en="About">O wydarzeniu</a></li>
+        <li><a href="#rsvp" class="nav-link" data-pl="RSVP" data-en="RSVP">RSVP</a></li>
+        <li><a href="#stay" class="nav-link" data-pl="Noclegi" data-en="Where to Stay">Noclegi</a></li>
+        <li><a href="#activities" class="nav-link" data-pl="Ciekawe miejsca" data-en="Things to Do">Ciekawe miejsca</a></li>
+        <!-- Nowe Zablokowane Zakładki -->
+        <li><a href="#" onclick="tryUnlock(event, 'tables')" class="nav-link locked-link" title="Dostępne od 03.08.2026">
+            <span style="margin-right:5px">🔒</span><span data-pl="Układ Stołów" data-en="Seating Plan">Układ Stołów</span>
+        </a></li>
+        <li><a href="#" onclick="tryUnlock(event, 'photo')" class="nav-link locked-link" title="Dostępne od 03.08.2026">
+            <span style="margin-right:5px">🔒</span><span data-pl="Foto-Wyzwania" data-en="Photo Challenge">Foto-Wyzwania</span>
+        </a></li>
+    </ul>
+</nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1 data-pl="ŚLUBIMY SIĘ" data-en="WE'RE GETTING MARRIED">ŚLUBIMY SIĘ</h1>
+        <div class="names" data-pl="Marta & Jakub" data-en="Marta & Jakub">Marta &amp; Jakub</div>
+        <p class="date-location">
+            <span data-pl="08 sierpnia 2026" data-en="August 08, 2026">08 sierpnia 2026</span>
+        </p>
+        <p class="location-detail" data-pl="Gdansk, Pomorskie" data-en="Gdansk, Pomeranian">Gdańsk, Pomorskie</p>
+        <div style="margin-top: 40px;">
+            <p data-pl="Dołącz do nas w tym wyjątkowym dniu!" data-en="Join us on this special day!">Dołącz do nas w tym wyjątkowym dniu!</p>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- Schedule Section -->
+    <section id="schedule">
+        <h2 data-pl="O wydarzeniu" data-en="About the event">O wydarzeniu</h2>
+        <div class="schedule">
+
+            <div class="event-card">
+                <h3 data-pl="Ślub" data-en="Wedding">Ślub</h3>
+                <div class="event-time" data-pl="Ceremonia | 14:00" data-en="Ceremony | 2:00 PM">Ceremonia | 14:00</div>
+                <div class="event-location" data-pl="Miejsce ślubu" data-en="Miejsce ślubu">Miejsce ślubu</div>
+                <div class="event-address" data-pl="Kościół św. Jakuba" data-en="St. James Church">Kościół św. Jakuba</div>
+				<div class="event-address" data-pl="Oliwa, Gdańsk" data-en="Oliwa, Gdansk">Oliwa, Gdańsk</div>
+            </div>
+			
+			<div class="event-card">
+                <h3 data-pl="Wesele" data-en="Reception">Wesele</h3>
+                <div class="event-time" data-pl="Wesele | 16:00" data-en="Reception | 16:00 PM">Wesele | 16:00</div>
+                <div class="event-location" data-pl="Restauracja Tabun" data-en="Tabun Restaurant">Restauracja Tabun</div>
+                <div class="event-address" data-pl="ul. Konna 29, Otomin, Gdańsk" data-en="29, Konna Street, Otomin, Gdansk">ul. Konna 29, Otomin, Gdańsk</div>
+            </div>
+			
+			<div class="event-card">
+                <h3 data-pl="Dress code" data-en="Dress code">Dress Code</h3>
+				<div class="event-time" data-pl="Strój wizytowy" data-en="Formal Attire">Strój wizytowy</div>
+				<div class="event-location" data-pl="Uprzejmie prosimy o strój wizytowy." data-en="We kindly request formal attire.">Uprzejmie prosimy o strój wizytowy.</div>
+				<div class="event-location" data-pl="Panie: suknia koktajlowa lub wieczorowa" data-en="Ladies: cocktail dress or gown">Panie: suknia koktajlowa lub wieczorowa</div>
+				<div class="event-location" data-pl="Panowie: garnitur lub smoking" data-en="Gentlemen: suit or tuxedo">Panowie: garnitur lub smoking</div>
+            </div>
+
+			<div class="event-card">
+                <h3 data-pl="Transport" data-en="Transport">Transport</h3>
+				<div class="event-location"
+				   data-pl="Po ceremonii zapewniamy transport z kościoła do Restauracji Tabun dla Gości niezmotoryzowanych."
+				   data-en="After the ceremony, transportation from the church to Tabun Restaurant will be provided for guests without a car.">
+				Po ceremonii zapewniamy transport z kościoła do Restauracji Tabun dla Gości niezmotoryzowanych.
+			  </div>
+            </div>
+			
+			<div class="event-card">
+                <h3 data-pl="Prezenty" data-en="Gifts">Prezenty</h3>
+			<div class="event-location"
+				   data-pl="Jeśli planujecie podarunek, będziemy wdzięczni za upominek w kopercie, który pomoże nam realizować wspólne plany i marzenia."
+				   data-en="If you are planning a gift, we would be grateful for a contribution in an envelope to help us achieve our shared plans and dreams.">
+				Jeśli planujecie podarunek, będziemy wdzięczni za upominek w kopercie, który pomoże nam realizować wspólne plany i marzenia.
+			  </div>
+            </div>
+
+			<div class="event-card">
+				<h3 data-pl="Dzieci" data-en="Children">Dzieci</h3>
+				<div class="event-time" data-pl="Uroczystość dla dorosłych" data-en="Adults-only celebration">Uroczystość dla dorosłych</div>
+				
+				<div class="event-address" 
+					 data-pl="Kochamy Wasze pociechy, jednak nasze wesele planujemy jako imprezę wyłącznie dla dorosłych." 
+					 data-en="We love your little ones, however, we are planning our wedding as an adults-only celebration.">
+					Kochamy Wasze pociechy, jednak nasze wesele planujemy jako imprezę wyłącznie dla dorosłych.
+				</div>
+				
+				<div class="event-address" style="margin-top: 15px;"
+					 data-pl="Mamy nadzieję, że pozwoli Wam to na chwilę wytchnienia i swobodną zabawę do białego rana." 
+					 data-en="We hope this will allow you a well-deserved night off and a chance to celebrate with us until dawn.">
+					Mamy nadzieję, że pozwoli Wam to na chwilę wytchnienia i swobodną zabawę do białego rana!
+				</div>
+			</div>
+        </div>
+    </section>
+
+    <!-- RSVP Section -->
+    <section id="rsvp">
+        <h2 data-pl="RSVP" data-en="RSVP">RSVP</h2>
+		<h2 data-pl="Prosimy o odpowiedź do 30 maja 2026." data-en="Please respond by May 30th, 2026">Prosimy o odpowiedź do 30 maja 2026.</h2>
+        <div class="rsvp-section">
+            <form id="rsvpForm" onsubmit="handleRSVPSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName" data-pl="Imię" data-en="First Name">Imię</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" data-pl="Nazwisko" data-en="Last Name">Nazwisko</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" data-pl="Email" data-en="Email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-pl="Czy będziesz uczestniczyć?" data-en="Will you be attending?">Czy będziesz uczestniczyć?</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="attendance" value="yes" required>
+                            <span data-pl="Tak" data-en="Yes">Tak</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="attendance" value="no" required>
+                            <span data-pl="Nie" data-en="No">Nie</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <h3 data-pl="Osoba towarzysząca" data-en="Plus One">Osoba towarzysząca</h3>
+                    <p data-pl="(wypełnij tylko jeśli otrzymałeś/aś zaproszenie dla dwóch osób)" data-en="(fill only if you received an invitation for two people)">(wypełnij tylko jeśli otrzymałeś/aś zaproszenie dla dwóch osób)</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="plusOneFirstName" data-pl="Imię" data-en="First Name">Imię</label>
+                        <input type="text" id="plusOneFirstName" name="plusOneFirstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="plusOneLastName" data-pl="Nazwisko" data-en="Last Name">Nazwisko</label>
+                        <input type="text" id="plusOneLastName" name="plusOneLastName">
+                    </div>
+                </div>
+				
+                <div class="form-divider">
+                    <h3 data-pl="Informacje dodatkowe" data-en="Additional information">Informacje dodatkowe</h3>
+                </div>
+				
+                <div class="form-group">
+                    <label for="dietary" data-pl="Ograniczenia dietetyczne (opcjonalnie)" data-en="Dietary Restrictions (optional)">Ograniczenia dietetyczne (opcjonalnie)</label>
+                    <textarea id="dietary" name="dietary" placeholder="np. wegetariańskie, alergiczne na..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="message" data-pl="Wiadomość dla Pary Młodej" data-en="Message for the Couple">Wiadomość dla Pary Młodej</label>
+                    <textarea id="message" name="message" placeholder="Podziel się swoimi życzeniami..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" data-pl="Wyślij RSVP" data-en="Submit RSVP">Wyślij RSVP</button>
+            </form>
+            <div id="formMessage" style="margin-top: 20px; text-align: center; color: var(--color-accent); display: none;"></div>
+        </div>
+    </section>
+
+    <!-- Accommodations Section -->
+    <section id="stay">
+        <h2 data-pl="Gdzie się zatrzymać" data-en="Where to Stay">Gdzie się zatrzymać</h2>
+        <p style="text-align: center; margin-bottom: 40px; color: #666;" data-pl="Drodzy Goście! Z uwagi na ograniczoną liczbę miejsc noclegowych w naszej sali, nie wszystkie zaproszenia zawierają zapewnienie noclegu. Jeżeli Twoje zaproszenie nie obejmuje tej opcji, przygotowaliśmy listę polecanych hoteli zlokalizowanych w pobliżu miejsca wesela, które ułatwią Wam rezerwację indywidualną." data-en="Dear Guests! Due to limited accommodation capacity at our venue, not all invitations include a stay. If your invitation does not include this option, we have prepared a list of recommended hotels situated near the wedding venue to assist you with your individual booking.">Drodzy Goście! Z uwagi na ograniczoną liczbę miejsc noclegowych w naszej sali, nie wszystkie zaproszenia zawierają zapewnienie noclegu. Jeżeli Twoje zaproszenie nie obejmuje tej opcji, przygotowaliśmy listę polecanych hoteli zlokalizowanych w pobliżu miejsca wesela, które ułatwią Wam rezerwację indywidualną.</p>
+        <div class="accommodations-grid">
+            <div class="hotel-card">
+                <h3>Hotel Otomin</h3>
+                <p>ul. Żurawia, Otomin</p>            
+            </div>
+
+            <div class="hotel-card">
+                <h3>Willa Aleksandria</h3>
+                <p>ul. Jagodowa 1, Otomin</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Things to Do Section -->
+    <section id="activities">
+        <h2 data-pl="Co warto zobaczyć" data-en="Places to Visit">Co warto zobaczyć</h2>
+        <p style="text-align: center; margin-bottom: 40px; color: #666;" data-pl="Chcemy pokazać Wam nasze ulubione zakątki! Oto miejsca idealne na spacer i zwiedzanie w pobliżu kościoła i sali weselnej." data-en="We want to show you our favorite spots! Here are perfect places for a walk and sightseeing near the church and reception venue.">Chcemy pokazać Wam nasze ulubione zakątki! Oto miejsca idealne na spacer i zwiedzanie w pobliżu kościoła i sali weselnej.</p>
+        <div class="activities-grid">
+            
+            <div class="activity-card">
+                <h3 data-pl="Park Oliwski" data-en="Oliwa Park">Park Oliwski</h3>
+                <p data-pl="Tuż obok kościoła. Przepiękny ogród francuski, palmiarnia i Groty Szeptów. Idealny na spacer przed ceremonią." data-en="Right next to the church. Beautiful French gardens, palm house, and Whispering Grottoes. Perfect for a pre-ceremony walk.">Tuż obok kościoła. Przepiękny ogród francuski, palmiarnia i Groty Szeptów. Idealny na spacer przed ceremonią.</p>
+            </div>
+
+            <div class="activity-card">
+                <h3 data-pl="Archikatedra Oliwska" data-en="Oliwa Cathedral">Archikatedra Oliwska</h3>
+                <p data-pl="Słynna z rokokowych organów. Warto zajrzeć do środka tego zabytku, znajdującego się tuż obok naszego kościoła św. Jakuba." data-en="Famous for its Rococo organ. Worth stepping inside this historic monument, located right next to our St. James Church.">Słynna z rokokowych organów. Warto zajrzeć do środka tego zabytku, znajdującego się tuż obok naszego kościoła św. Jakuba.</p>
+            </div>
+
+            <div class="activity-card">
+                <h3 data-pl="Wzgórze Pachołek" data-en="Pachołek Hill">Wzgórze Pachołek</h3>
+                <p data-pl="Punkt widokowy w Oliwie. 15-metrowa wieża, z której rozpościera się panorama na całe Trójmiasto i Zatokę." data-en="Viewpoint in Oliwa. A 15-meter tower offering a panoramic view of the entire Tricity and the Bay.">Punkt widokowy w Oliwie. 15-metrowa wieża, z której rozpościera się panorama na całe Trójmiasto i Zatokę.</p>
+            </div>
+
+            <div class="activity-card">
+                <h3 data-pl="Jezioro Otomińskie" data-en="Otomin Lake">Jezioro Otomińskie</h3>
+                <p data-pl="Znajduje się tuż przy sali weselnej (Tabun). Malowniczy las i jezioro, idealne na relaks i kontakt z naturą." data-en="Located right by the reception venue (Tabun). Scenic forest and lake, perfect for relaxing and connecting with nature.">Znajduje się tuż przy sali weselnej (Tabun). Malowniczy las i jezioro, idealne na relaks i kontakt z naturą.</p>
+            </div>
+
+            <div class="activity-card">
+                <h3 data-pl="Stare Miasto Gdańsk" data-en="Gdańsk Old Town">Stare Miasto Gdańsk</h3>
+                <p data-pl="Jeśli macie więcej czasu, odwiedźcie ulicę Długą i Żurawia. To serce historycznego Gdańska." data-en="If you have more time, visit Long Market and the Crane. This is the heart of historic Gdańsk.">Jeśli macie więcej czasu, odwiedźcie ulicę Długą i Żurawia. To serce historycznego Gdańska.</p>
+            </div>
+
+            <div class="activity-card">
+                <h3 data-pl="Molo w Sopocie" data-en="Sopot Pier">Molo w Sopocie</h3>
+                <p data-pl="Najdłuższe drewniane molo w Europie. Z Oliwy to tylko 10 minut pociągiem SKM lub taksówką." data-en="The longest wooden pier in Europe. From Oliwa, it's just a 10-minute train ride or taxi.">Najdłuższe drewniane molo w Europie. Z Oliwy to tylko 10 minut pociągiem SKM lub taksówką.</p>
+            </div>
+
+        </div>
+    </section>
+
+<!-- Modal na Hasło -->
+<div id="secretModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeSecretModal()">&times;</span>
+        <h3 data-pl="Strefa Gości" data-en="Guest Zone">Strefa Gości</h3>
+        <p id="lockMsg" style="margin: 15px 0; color: #666;" 
+           data-pl="Ta sekcja jest dostępna tylko dla wtajemniczonych." 
+           data-en="This section is for insiders only.">
+           Ta sekcja jest dostępna tylko dla wtajemniczonych.
+        </p>
+        <input type="password" id="secretPass" placeholder="Hasło / Password" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px;">
+        <button onclick="checkSecret()" class="submit-btn">Odblokuj / Unlock</button>
+    </div>
+</div>
+
+<!-- Sekcja: Układ Stołów (Ukryta) -->
+<section id="tables-section" class="hidden" style="background: #fdfbf7; border-top: 4px solid var(--color-accent);">
+    <h2 data-pl="Układ Stołów" data-en="Seating Plan">Układ Stołów</h2>
+    <p style="text-align: center; margin-bottom: 30px;" data-pl="Znajdź swoje miejsce!" data-en="Find your seat!">Znajdź swoje miejsce!</p>
+    
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center;">
+        <!-- Placeholder na obrazek stołów -->
+        <div style="border: 2px dashed #ccc; padding: 50px 20px; color: #888;">
+            <p style="font-size: 40px; margin-bottom: 20px;">🍽️</p>
+            <p>Tutaj grafika z układem stołów.</p>
+            <p style="font-size: 12px;">(Obrazek .jpg lub link do PDF)</p>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: left;">
+            <h4 style="color: var(--color-primary); margin-bottom: 10px;">Legenda:</h4>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 5px;"><strong>Stół 1:</strong> Rodzice i Świadkowie</li>
+                <li style="margin-bottom: 5px;"><strong>Stół 2:</strong> Kuzynostwo</li>
+                <li><strong>Stół 3:</strong> Znajomi z pracy</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Sekcja: Foto-Wyzwania (Ukryta) -->
+<section id="photo-section" class="hidden" style="background: white; border-top: 4px solid var(--color-primary);">
+    <h2 data-pl="Foto-Wyzwania" data-en="Photo Challenge">Foto-Wyzwania 📸</h2>
+    <p style="text-align: center; margin-bottom: 40px;" data-pl="Zostań naszym weselnym paparazzi!" data-en="Be our wedding paparazzi!">Zostań naszym weselnym paparazzi! </p>
+    
+    <div class="challenges-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <!-- Wyzwanie 1 -->
+        <div class="challenge-card">
+            <div class="icon">🥂</div>
+            <p data-pl="Najciekawszy toast" data-en="Most interesting toast">Najciekawszy toast</p>
+        </div>
+        <!-- Wyzwanie 2 -->
+        <div class="challenge-card">
+            <div class="icon">💃</div>
+            <p data-pl="Król/Królowa parkietu" data-en="Dancing Queen/King">Król/Królowa parkietu</p>
+        </div>
+        <!-- Wyzwanie 3 -->
+        <div class="challenge-card">
+            <div class="icon">🍰</div>
+            <p data-pl="Ktoś jedzący tort (z ukrycia)" data-en="Eating cake (candid shot)">Ktoś jedzący tort (z ukrycia)</p>
+        </div>
+        <!-- Wyzwanie 4 -->
+        <div class="challenge-card">
+            <div class="icon">💏</div>
+            <p data-pl="Pocałunek Pary Młodej" data-en="Newlyweds kissing">Pocałunek Pary Młodej</p>
+        </div>
+        <!-- Wyzwanie 6 -->
+        <div class="challenge-card">
+            <div class="icon">🤪</div>
+            <p data-pl="Grupowe selfie ze stołu" data-en="Table group selfie">Grupowe selfie ze stołu</p>
+        </div>
+		<!-- Wyzwanie 7: Łzy wzruszenia -->
+		<div class="challenge-card">
+			<div class="icon">🥲</div>
+			<p data-pl="Łzy wzruszenia (ktoś z gości)" data-en="Tears of joy (a guest)">Łzy wzruszenia (ktoś z gości)</p>
+		</div>
+		<!-- Wyzwanie 8: Buty w ręku -->
+		<div class="challenge-card">
+			<div class="icon">👠</div>
+			<p data-pl="Taniec bez butów" data-en="Dancing without shoes">Taniec bez butów</p>
+		</div>
+		<!-- Wyzwanie 9: Artystyczny detal -->
+		<div class="challenge-card">
+			<div class="icon">✨</div>
+			<p data-pl="Ulubiona dekoracja sali" data-en="Favorite decor detail">Ulubiona dekoracja sali</p>
+		</div>
+		<!-- Wyzwanie 10: Selfie z Świadkiem -->
+		<div class="challenge-card">
+			<div class="icon">🤳</div>
+			<p data-pl="Selfie ze Świadkiem/Świadkową" data-en="Selfie with Best Man/Maid of Honor">Selfie ze Świadkiem/Świadkową</p>
+		</div>
+
+    </div>
+    
+    <div style="text-align: center; margin-top: 50px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+        <p style="font-weight: bold; color: var(--color-dark);" data-pl="Gdzie wysyłać zdjęcia?" data-en="Where to send photos?">Gdzie wysyłać zdjęcia?</p>
+        <p data-pl="Wrzuć na Instagram z hashtagiem #MartaJakub2026, wyślij nam na WhatsApp lub skorzystaj z naszej chmury klikając przycisk 'Wyślij zdjęcia tutaj'" 
+           data-en="Post on Instagram with #MartaJakub2026, send via WhatsApp or use our cloud by clicking the button 'Upload photos here'">
+           Wrzuć na Instagram z hashtagiem #MartaJakub2026, wyślij nam na WhatsApp lub skorzystaj z naszej chmury klikając przycisk "Wyślij zdjęcia tutaj"
+        </p>
+    </div>
+	<!-- Przycisk Uploadu -->
+<div style="text-align: center; margin: 40px 0;">
+    <button id="upload_widget" class="submit-btn" style="max-width: 300px; background-color: var(--color-accent);">
+        📸 <span data-pl="Wyślij zdjęcia tutaj" data-en="Upload photos here">Wyślij zdjęcia tutaj</span>
+    </button>
+    <p style="font-size: 12px; color: #888; margin-top: 10px;" 
+       data-pl="Bez logowania i instalowania aplikacji" 
+       data-en="No login or app required">
+       Bez logowania i instalowania aplikacji
+    </p>
+</div>
+</section>
+
+
+    <!-- Footer -->
+    <footer>
+        <p><span data-pl="Z całego serca" data-en="With all our hearts">Z całego serca</span>  <span id="admin-heart" class="heart" onclick="adminUnlock()" style="cursor: pointer; user-select: none;">❤</span></p>
+        <p data-pl="Marta & Jakub" data-en="Marta & Jakub">Marta &amp; Jakub</p>
+		<p data-pl="080826.wesele@gmail.com" data-en="080826.wesele@gmail.com">080826.wesele@gmail.com</p>
+        <p style="margin-top: 20px; font-size: 12px; opacity: 0.8;" data-pl="Dziękujemy za celebrowanie tego dnia z nami!" data-en="Thank you for sharing this day with us!">Dziękujemy za celebrowanie tego dnia z nami!</p>
+    </footer>
+
+    <script>
+    // --- ZMIENNE GLOBALNE I KONFIGURACJA ---
+    let currentLanguage = 'pl';
+    const UNLOCK_DATE = new Date('2026-08-03T00:00:00');
+    const VALID_PASSWORDS = ["JAKUB", "MARTA", "MJ26", "WESELE"];
+    let targetSectionId = '';
+    
+    // Zmienne dla Admin Backdoor
+    let clickCount = 0;
+    let clickTimer;
+
+    // --- INICJALIZACJA (przy załadowaniu strony) ---
+    (function() {
+        // Inicjalizacja EmailJS
+        emailjs.init({
+            publicKey: "MmXQul_uJJvS260l9",
+        });
+    })();
+
+    window.addEventListener('load', function() {
+        // Sprawdź czy odblokowano wcześniej
+        if (localStorage.getItem('wedding_unlocked') === 'true') {
+            revealSections();
+        }
+    });
+
+    // --- FUNKCJE JĘZYKOWE ---
+    function switchLanguage(lang) {
+        currentLanguage = lang;
+
+        // Aktualizacja przycisków
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // Aktualizacja tekstów [data-pl]
+        document.querySelectorAll('[data-pl][data-en]').forEach(element => {
+            element.textContent = lang === 'pl' 
+                ? element.getAttribute('data-pl') 
+                : element.getAttribute('data-en');
+        });
+
+        // Aktualizacja placeholderów formularza
+        const dietaryInput = document.getElementById('dietary');
+        const messageInput = document.getElementById('message');
+        const passInput = document.getElementById('secretPass');
+
+        if (lang === 'pl') {
+            if(dietaryInput) dietaryInput.placeholder = 'np. wegetariańskie, alergiczne na...';
+            if(messageInput) messageInput.placeholder = 'Podziel się swoimi życzeniami...';
+            if(passInput) passInput.placeholder = 'Hasło';
+        } else {
+            if(dietaryInput) dietaryInput.placeholder = 'e.g., vegetarian, allergic to...';
+            if(messageInput) messageInput.placeholder = 'Share your wishes...';
+            if(passInput) passInput.placeholder = 'Password';
+        }
+
+        // Aktualizacja etykiet radio (Tak/Nie)
+        document.querySelectorAll('.radio-group label span').forEach((label, index) => {
+            if (index === 0) label.textContent = lang === 'pl' ? 'Tak' : 'Yes';
+            else if (index === 1) label.textContent = lang === 'pl' ? 'Nie' : 'No';
+        });
+    }
+
+    // --- FUNKCJA RSVP (Wysyłanie formularza) ---
+    function handleRSVPSubmit(event) {
+        event.preventDefault();
+
+        const submitBtn = event.target.querySelector('.submit-btn');
+        const originalBtnText = submitBtn.textContent;
+        
+        submitBtn.textContent = currentLanguage === 'pl' ? 'Wysyłanie...' : 'Sending...';
+        submitBtn.disabled = true;
+
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('email').value;
+        const attendance = document.querySelector('input[name="attendance"]:checked').value;
+        const dietary = document.getElementById('dietary').value;
+        const message = document.getElementById('message').value;
+        
+        const plusOneFirstName = document.getElementById('plusOneFirstName').value;
+        const plusOneLastName = document.getElementById('plusOneLastName').value;
+        const plusOneName = (plusOneFirstName || plusOneLastName) 
+            ? `${plusOneFirstName} ${plusOneLastName}`.trim() 
+            : '';
+
+        const formData = {
+            guestname: firstName + ' ' + lastName,
+            email: email,
+            attending: attendance === 'yes' ? 'TAK' : 'NIE',
+            attending1: plusOneName || (currentLanguage === 'pl' ? 'Brak' : 'None'),
+            dietary: dietary || (currentLanguage === 'pl' ? 'Brak' : 'None'),
+            message: message || (currentLanguage === 'pl' ? 'Brak wiadomości' : 'No message'),
+            language: currentLanguage === 'pl' ? 'Polish' : 'English'
+        };
+
+        emailjs.send('080826', 'template_nzzzhuy', formData)
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.textContent = currentLanguage === 'pl' 
+                    ? 'Dziękujemy! Twoja odpowiedź RSVP została przyjęta.' 
+                    : 'Thank you! Your RSVP has been received.';
+                messageDiv.style.color = 'var(--color-primary)';
+                messageDiv.style.display = 'block';
+                document.getElementById('rsvpForm').reset();
+            }, function(error) {
+                console.log('FAILED...', error);
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.textContent = currentLanguage === 'pl' 
+                    ? 'Wystąpił błąd. Spróbuj ponownie później.' 
+                    : 'An error occurred. Please try again later.';
+                messageDiv.style.color = 'red';
+                messageDiv.style.display = 'block';
+            })
+            .finally(() => {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                setTimeout(() => {
+                    const msgDiv = document.getElementById('formMessage');
+                    if(msgDiv) msgDiv.style.display = 'none';
+                }, 5000);
+            });
+    }
+
+    // --- FUNKCJE TAJNEJ SEKCJI ---
+
+    function tryUnlock(event, sectionName) {
+        event.preventDefault();
+        
+        if (localStorage.getItem('wedding_unlocked') === 'true') {
+            revealSections();
+            scrollToSection(sectionName);
+            return;
+        }
+
+        // Sprawdź datę (odkomentuj po testach!)
+        /*
+        const now = new Date();
+        if (now < UNLOCK_DATE) {
+            const msg = currentLanguage === 'pl' 
+                ? "Cierpliwości! Ta sekcja zostanie otwarta 3 sierpnia 2026." 
+                : "Patience! This section opens on August 3rd, 2026.";
+            alert(msg);
+            return;
+        }
+        */
+
+        targetSectionId = sectionName;
+        const modal = document.getElementById('secretModal');
+        if(modal) modal.classList.remove('hidden');
+    }
+
+    function checkSecret() {
+        const inputElement = document.getElementById('secretPass');
+        const input = inputElement.value.trim().toUpperCase();
+        
+        if (VALID_PASSWORDS.includes(input)) {
+            localStorage.setItem('wedding_unlocked', 'true');
+            closeSecretModal();
+            revealSections();
+            scrollToSection(targetSectionId);
+            inputElement.value = '';
+        } else {
+            const errorMsg = currentLanguage === 'pl' ? "Błędne hasło!" : "Wrong password!";
+            alert(errorMsg);
+            inputElement.value = '';
+        }
+    }
+
+    function closeSecretModal() {
+        const modal = document.getElementById('secretModal');
+        if(modal) modal.classList.add('hidden');
+    }
+
+    function revealSections() {
+        const tables = document.getElementById('tables-section');
+        const photo = document.getElementById('photo-section');
+        
+        if(tables) tables.classList.remove('hidden');
+        if(photo) photo.classList.remove('hidden');
+        
+        const locks = document.querySelectorAll('.locked-link');
+        locks.forEach(link => {
+            link.classList.remove('locked-link');
+            link.classList.add('unlocked-link');
+            link.innerHTML = link.innerHTML.replace('🔒', '🔓');
+        });
+    }
+
+    function scrollToSection(name) {
+        let id = '';
+        if(name === 'tables') id = 'tables-section';
+        if(name === 'photo') id = 'photo-section';
+        
+        const el = document.getElementById(id);
+        if(el) {
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }
+
+    // --- ADMIN BACKDOOR (5 kliknięć w serce) ---
+    function adminUnlock() {
+        clickCount++;
+        
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+            clickCount = 0;
+        }, 1000);
+
+        if (clickCount >= 5) {
+            console.log("Admin backdoor activated! 🔓");
+            localStorage.setItem('wedding_unlocked', 'true');
+            closeSecretModal();
+            revealSections();
+            
+            const heart = document.getElementById('admin-heart');
+            if(heart) {
+                heart.style.color = '#50C878';
+                setTimeout(() => heart.style.color = '', 1000);
+            }
+            
+            alert("Tryb Administratora: Odblokowano!");
+            clickCount = 0;
+        }
+    }
+// --- CLOUDINARY UPLOAD WIDGET ---
+    
+    // Konfiguracja widgetu
+    const myWidget = cloudinary.createUploadWidget({
+        cloudName: 'dyz8kvmfn', 
+        uploadPreset: 'wedding_photos',
+        sources: ['local', 'camera', 'instagram'], // Źródła: pliki, aparat, insta
+        multiple: true,  // Pozwól na wiele plików
+        maxFiles: 50,
+        folder: 'wedding_guests_uploads', // Opcjonalnie: folder w chmurze
+        clientAllowedFormats: ['image'], // Tylko zdjęcia
+        styles: {
+            palette: {
+                window: "#FFFFFF",
+                windowBorder: "#90A0B3",
+                tabIcon: "#D4A5A5", // Twój kolor primary
+                menuIcons: "#5A616A",
+                textDark: "#000000",
+                textLight: "#FFFFFF",
+                link: "#D4A5A5",
+                action: "#8B9D83", // Twój kolor accent
+                inactiveTabIcon: "#0E2F5A",
+                error: "#F44235",
+                inProgress: "#0078FF",
+                complete: "#20B832",
+                sourceBg: "#E4EBF1"
+            },
+            fonts: {
+                default: null,
+                "'Segoe UI', sans-serif": {
+                    url: "https://fonts.googleapis.com/css?family=Segoe+UI",
+                    active: true
+                }
+            }
+        },
+        text: {
+            en: {
+                queue: {
+                    title: "Kolejka wysyłania",
+                    title_uploading_with_counter: "Wysyłanie {{num}} zdjęć"
+                },
+                crop: {
+                    title: "Przytnij"
+                }
+            }
+        }
+    }, (error, result) => { 
+        if (!error && result && result.event === "success") { 
+            console.log('Zdjęcie wysłane! Info: ', result.info); 
+        }
+        if (!error && result && result.event === "queues-end") {
+            alert("Dziękujemy za zdjęcia! Trafiły prosto do nas. 🎉");
+        }
+    });
+
+    // Obsługa kliknięcia przycisku
+    document.getElementById("upload_widget").addEventListener("click", function(e) {
+        e.preventDefault();
+        myWidget.open();
+    }, false);
+	function toggleMenu() {
+    const menu = document.getElementById('nav-menu');
+    menu.classList.toggle('active');
+}
+
+// Opcjonalnie: Zamknij menu po kliknięciu w dowolny link
+document.querySelectorAll('#nav-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.getElementById('nav-menu').classList.remove('active');
+    });
+});
+</script>
+
+</body>
+</html>
