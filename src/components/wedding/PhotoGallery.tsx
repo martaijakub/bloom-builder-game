@@ -138,7 +138,6 @@ const PhotoGallery = () => {
     setLoading(true);
     setError(false);
     try {
-      // Cloudinary list by tag endpoint (requires "Resource list" enabled in Cloudinary settings)
       const res = await fetch(
         `https://res.cloudinary.com/${CLOUD_NAME}/image/list/v1/wedding_guests_uploads.json`
       );
@@ -146,11 +145,11 @@ const PhotoGallery = () => {
       const data = await res.json();
       setPhotos(data.resources || []);
     } catch {
-      // Fallback: try fetching by common tags used in challenges
       try {
-        const tags = ["general", "most_interesting_toast", "dancing_queen_king", "eating_cake__candid_shot_", "newlyweds_kissing", "table_group_selfie"];
+        const tags = TAG_FILTERS.map((f) => f.tag);
         const allPhotos: CloudinaryResource[] = [];
-        
+        const byTag: Record<string, CloudinaryResource[]> = {};
+
         for (const tag of tags) {
           try {
             const res = await fetch(
@@ -158,16 +157,23 @@ const PhotoGallery = () => {
             );
             if (res.ok) {
               const data = await res.json();
-              if (data.resources) allPhotos.push(...data.resources);
+              if (data.resources) {
+                const resources = data.resources.map((r: CloudinaryResource) => ({
+                  ...r,
+                  tags: [...(r.tags || []), tag],
+                }));
+                byTag[tag] = resources;
+                allPhotos.push(...resources);
+              }
             }
           } catch {}
         }
-        
-        // Deduplicate by public_id
+
         const unique = Array.from(
           new Map(allPhotos.map((p) => [p.public_id, p])).values()
         );
         setPhotos(unique);
+        setPhotosByTag(byTag);
         if (unique.length === 0) setError(true);
       } catch {
         setError(true);
@@ -181,18 +187,24 @@ const PhotoGallery = () => {
     fetchPhotos();
   }, [fetchPhotos]);
 
+  const filteredPhotos = useMemo(() => {
+    if (!activeTag) return photos;
+    if (photosByTag[activeTag]) return photosByTag[activeTag];
+    return photos.filter((p) => p.tags?.includes(activeTag));
+  }, [photos, activeTag, photosByTag]);
+
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
 
   const goNext = () => {
     if (lightboxIndex !== null) {
-      setLightboxIndex((lightboxIndex + 1) % photos.length);
+      setLightboxIndex((lightboxIndex + 1) % filteredPhotos.length);
     }
   };
 
   const goPrev = () => {
     if (lightboxIndex !== null) {
-      setLightboxIndex((lightboxIndex - 1 + photos.length) % photos.length);
+      setLightboxIndex((lightboxIndex - 1 + filteredPhotos.length) % filteredPhotos.length);
     }
   };
 
