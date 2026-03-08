@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
+import { useReveal } from "@/hooks/useReveal";
 import emailjs from "@emailjs/browser";
 
 const RSVPForm = () => {
@@ -7,6 +8,7 @@ const RSVPForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
+  const { ref, visible } = useReveal();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,126 +57,137 @@ const RSVPForm = () => {
   };
 
   const inputClass =
-    "w-full px-4 py-3 border border-border rounded-md font-sans text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all";
+    "w-full px-4 py-3 bg-background border border-border font-sans text-foreground text-sm focus:outline-none focus:border-wedding-gold focus:ring-1 focus:ring-wedding-gold/20 transition-all";
 
   return (
-    <section id="rsvp" className="py-24 px-5">
-      <h2 className="font-script text-5xl text-primary text-center mb-4">RSVP</h2>
-      <h3 className="font-script text-2xl text-primary text-center mb-12">
-        {t("Prosimy o odpowiedź do 30 maja 2026.", "Please respond by May 30th, 2026")}
-      </h3>
+    <section id="rsvp" className="py-28 md:py-36 px-6 bg-accent/30">
+      <div ref={ref} className={`max-w-xl mx-auto reveal ${visible ? "visible" : ""}`}>
+        <div className="text-center mb-14">
+          <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
+            {t("Potwierdź obecność", "Confirm attendance")}
+          </p>
+          <h2 className="font-serif text-5xl md:text-6xl font-light text-foreground tracking-tight mb-3">
+            RSVP
+          </h2>
+          <p className="font-sans text-sm text-muted-foreground">
+            {t("Prosimy o odpowiedź do 30 maja 2026", "Please respond by May 30, 2026")}
+          </p>
+        </div>
 
-      <div className="max-w-xl mx-auto bg-card p-8 md:p-12 rounded-lg shadow-md">
-        <form ref={formRef} onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-            <div>
-              <label className="block mb-1 font-sans text-sm font-medium text-foreground">
-                {t("Imię", "First Name")}
-              </label>
-              <input name="firstName" required className={inputClass} />
-            </div>
-            <div>
-              <label className="block mb-1 font-sans text-sm font-medium text-foreground">
-                {t("Nazwisko", "Last Name")}
-              </label>
-              <input name="lastName" required className={inputClass} />
-            </div>
-          </div>
-
-          <div className="mb-5">
-            <label className="block mb-1 font-sans text-sm font-medium text-foreground">Email</label>
-            <input name="email" type="email" required className={inputClass} />
-          </div>
-
-          <div className="mb-5">
-            <label className="block mb-1 font-sans text-sm font-medium text-foreground">
-              {t("Czy będziesz uczestniczyć?", "Will you be attending?")}
-            </label>
-            <div className="flex gap-6 mt-2">
-              <label className="flex items-center gap-2 font-sans">
-                <input type="radio" name="attendance" value="yes" required className="accent-primary" />
-                {t("Tak", "Yes")}
-              </label>
-              <label className="flex items-center gap-2 font-sans">
-                <input type="radio" name="attendance" value="no" required className="accent-primary" />
-                {t("Nie", "No")}
-              </label>
-            </div>
-          </div>
-
-          {/* Plus one */}
-          <div className="border-t border-border pt-6 mt-6 mb-5">
-            <h4 className="font-serif text-lg text-foreground mb-1">
-              {t("Osoba towarzysząca", "Plus One")}
-            </h4>
-            <p className="text-xs text-muted-foreground mb-4">
-              {t(
-                "(wypełnij tylko jeśli otrzymałeś/aś zaproszenie dla dwóch osób)",
-                "(fill only if you received an invitation for two people)"
-              )}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="border border-border/60 bg-card/50 backdrop-blur-sm p-8 md:p-12">
+          <form ref={formRef} onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
               <div>
-                <label className="block mb-1 font-sans text-sm font-medium text-foreground">
+                <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
                   {t("Imię", "First Name")}
                 </label>
-                <input name="plusOneFirstName" className={inputClass} />
+                <input name="firstName" required className={inputClass} />
               </div>
               <div>
-                <label className="block mb-1 font-sans text-sm font-medium text-foreground">
+                <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
                   {t("Nazwisko", "Last Name")}
                 </label>
-                <input name="plusOneLastName" className={inputClass} />
+                <input name="lastName" required className={inputClass} />
               </div>
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-6 mt-6 mb-5">
-            <h4 className="font-serif text-lg text-foreground mb-4">
-              {t("Informacje dodatkowe", "Additional information")}
-            </h4>
-
-            <div className="mb-5">
-              <label className="block mb-1 font-sans text-sm font-medium text-foreground">
-                {t("Ograniczenia dietetyczne (opcjonalnie)", "Dietary Restrictions (optional)")}
-              </label>
-              <textarea
-                name="dietary"
-                className={`${inputClass} min-h-[80px] resize-y`}
-                placeholder={t("np. wegetariańskie, alergiczne na...", "e.g., vegetarian, allergic to...")}
-              />
             </div>
 
             <div className="mb-6">
-              <label className="block mb-1 font-sans text-sm font-medium text-foreground">
-                {t("Wiadomość dla Pary Młodej", "Message for the Couple")}
-              </label>
-              <textarea
-                name="message"
-                className={`${inputClass} min-h-[80px] resize-y`}
-                placeholder={t("Podziel się swoimi życzeniami...", "Share your wishes...")}
-              />
+              <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">Email</label>
+              <input name="email" type="email" required className={inputClass} />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={sending}
-            className="w-full bg-primary text-primary-foreground py-4 rounded-md font-sans font-semibold text-base uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {sending ? t("Wysyłanie...", "Sending...") : t("Wyślij RSVP", "Submit RSVP")}
-          </button>
-        </form>
+            <div className="mb-6">
+              <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+                {t("Czy będziesz uczestniczyć?", "Will you be attending?")}
+              </label>
+              <div className="flex gap-8 mt-3">
+                <label className="flex items-center gap-3 font-sans text-sm cursor-pointer">
+                  <input type="radio" name="attendance" value="yes" required className="accent-primary w-4 h-4" />
+                  {t("Tak", "Yes")}
+                </label>
+                <label className="flex items-center gap-3 font-sans text-sm cursor-pointer">
+                  <input type="radio" name="attendance" value="no" required className="accent-primary w-4 h-4" />
+                  {t("Nie", "No")}
+                </label>
+              </div>
+            </div>
 
-        {message && (
-          <div
-            className={`mt-5 text-center font-sans text-sm ${
-              message.error ? "text-destructive" : "text-primary"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
+            {/* Plus one */}
+            <div className="divider-gold my-8" />
+            <div className="mb-6">
+              <h4 className="font-serif text-xl font-light text-foreground mb-1">
+                {t("Osoba towarzysząca", "Plus One")}
+              </h4>
+              <p className="text-xs text-muted-foreground font-sans mb-5">
+                {t(
+                  "(wypełnij tylko jeśli otrzymałeś/aś zaproszenie dla dwóch osób)",
+                  "(fill only if you received an invitation for two people)"
+                )}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+                    {t("Imię", "First Name")}
+                  </label>
+                  <input name="plusOneFirstName" className={inputClass} />
+                </div>
+                <div>
+                  <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+                    {t("Nazwisko", "Last Name")}
+                  </label>
+                  <input name="plusOneLastName" className={inputClass} />
+                </div>
+              </div>
+            </div>
+
+            <div className="divider-gold my-8" />
+            <div className="mb-6">
+              <h4 className="font-serif text-xl font-light text-foreground mb-5">
+                {t("Informacje dodatkowe", "Additional Details")}
+              </h4>
+
+              <div className="mb-5">
+                <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+                  {t("Ograniczenia dietetyczne", "Dietary Restrictions")}
+                </label>
+                <textarea
+                  name="dietary"
+                  className={`${inputClass} min-h-[80px] resize-y`}
+                  placeholder={t("np. wegetariańskie, bezglutenowe...", "e.g., vegetarian, gluten-free...")}
+                />
+              </div>
+
+              <div className="mb-8">
+                <label className="block mb-2 font-sans text-xs tracking-wider uppercase text-muted-foreground">
+                  {t("Wiadomość", "Message")}
+                </label>
+                <textarea
+                  name="message"
+                  className={`${inputClass} min-h-[80px] resize-y`}
+                  placeholder={t("Podziel się swoimi życzeniami...", "Share your wishes...")}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={sending}
+              className="w-full bg-primary text-primary-foreground py-4 font-sans font-medium text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-all disabled:opacity-50"
+            >
+              {sending ? t("Wysyłanie...", "Sending...") : t("Wyślij RSVP", "Submit RSVP")}
+            </button>
+          </form>
+
+          {message && (
+            <div
+              className={`mt-6 text-center font-sans text-sm ${
+                message.error ? "text-destructive" : "text-wedding-gold"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
