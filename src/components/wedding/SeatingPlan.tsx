@@ -135,7 +135,7 @@ const AdminLoginModal = ({
   );
 };
 
-// ---- Round table visual component ----
+// ---- Rectangle table visual component ----
 const TableVisual = ({
   table,
   isAdmin,
@@ -151,7 +151,41 @@ const TableVisual = ({
 }) => {
   const { t } = useLang();
   const guestCount = table.guests.length;
-  const radius = Math.max(55, 38 + guestCount * 5);
+  const { width, height } = table;
+
+  // Distribute guests around the rectangle perimeter
+  const getGuestPositions = () => {
+    const positions: { x: number; y: number }[] = [];
+    const perimeter = 2 * (width + height);
+    const spacing = perimeter / guestCount;
+
+    for (let i = 0; i < guestCount; i++) {
+      let dist = i * spacing;
+      let x = 0, y = 0;
+
+      if (dist < width) {
+        // Top edge
+        x = dist - width / 2;
+        y = -height / 2 - 20;
+      } else if (dist < width + height) {
+        // Right edge
+        x = width / 2 + 20;
+        y = (dist - width) - height / 2;
+      } else if (dist < 2 * width + height) {
+        // Bottom edge
+        x = width / 2 - (dist - width - height);
+        y = height / 2 + 20;
+      } else {
+        // Left edge
+        x = -width / 2 - 20;
+        y = height / 2 - (dist - 2 * width - height);
+      }
+      positions.push({ x, y });
+    }
+    return positions;
+  };
+
+  const guestPositions = getGuestPositions();
 
   return (
     <div
@@ -161,10 +195,10 @@ const TableVisual = ({
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
     >
-      {/* Table circle */}
+      {/* Table rectangle */}
       <div
-        className="rounded-full bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative"
-        style={{ width: radius * 2, height: radius * 2 }}
+        className="bg-wedding-warm border-2 border-wedding-gold/30 flex items-center justify-center shadow-md relative rounded-sm"
+        style={{ width, height }}
       >
         <div className="text-center">
           <p className="font-serif text-sm font-medium text-foreground leading-tight">{table.label}</p>
@@ -173,22 +207,18 @@ const TableVisual = ({
 
         {/* Guest seats around the table */}
         {table.guests.map((guest, i) => {
-          const angle = (i / guestCount) * Math.PI * 2 - Math.PI / 2;
-          const seatRadius = radius + 22;
-          const sx = Math.cos(angle) * seatRadius;
-          const sy = Math.sin(angle) * seatRadius;
-
+          const pos = guestPositions[i];
           return (
             <div
               key={guest.id}
               className="absolute flex items-center justify-center"
               style={{
-                left: `calc(50% + ${sx}px)`,
-                top: `calc(50% + ${sy}px)`,
+                left: `calc(50% + ${pos.x}px)`,
+                top: `calc(50% + ${pos.y}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <div className="bg-card border border-border/60 rounded-full px-2 py-0.5 shadow-sm whitespace-nowrap">
+              <div className="bg-card border border-border/60 rounded px-2 py-0.5 shadow-sm whitespace-nowrap">
                 <span className="font-sans text-[9px] text-foreground">{guest.name}</span>
               </div>
             </div>
