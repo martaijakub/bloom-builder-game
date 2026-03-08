@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { RefreshCw, X, ChevronLeft, ChevronRight, Image } from "lucide-react";
 
@@ -22,6 +22,95 @@ function getImageUrl(publicId: string, transform = "c_fill,w_400,h_400,q_auto,f_
 function getFullUrl(publicId: string) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${publicId}`;
 }
+
+const SWIPE_THRESHOLD = 50;
+
+const LightboxOverlay = ({
+  photos,
+  index,
+  onClose,
+  onNext,
+  onPrev,
+}: {
+  photos: CloudinaryResource[];
+  index: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+}) => {
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchDelta = useRef(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    touchDelta.current = 0;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart.current) return;
+    const dx = e.touches[0].clientX - touchStart.current.x;
+    touchDelta.current = dx;
+    setSwipeOffset(dx);
+  };
+
+  const handleTouchEnd = () => {
+    if (Math.abs(touchDelta.current) > SWIPE_THRESHOLD) {
+      if (touchDelta.current < 0) onNext();
+      else onPrev();
+    }
+    touchStart.current = null;
+    touchDelta.current = 0;
+    setSwipeOffset(0);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[5000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={(e) => { e.stopPropagation(); onPrev(); }}
+            className="absolute left-4 text-white/70 hover:text-white z-10 hidden md:block"
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onNext(); }}
+            className="absolute right-4 text-white/70 hover:text-white z-10 hidden md:block"
+          >
+            <ChevronRight className="w-8 h-8" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={getFullUrl(photos[index].public_id)}
+        alt={`Photo ${index + 1}`}
+        className="max-w-full max-h-[85vh] object-contain transition-transform duration-150"
+        style={{ transform: `translateX(${swipeOffset}px)` }}
+        onClick={(e) => e.stopPropagation()}
+        draggable={false}
+      />
+
+      <div className="absolute bottom-4 text-white/60 font-sans text-xs">
+        {index + 1} / {photos.length}
+      </div>
+    </div>
+  );
+};
 
 const PhotoGallery = () => {
   const { t } = useLang();
@@ -170,45 +259,13 @@ const PhotoGallery = () => {
 
       {/* Lightbox */}
       {lightboxIndex !== null && photos[lightboxIndex] && (
-        <div
-          className="fixed inset-0 z-[5000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={closeLightbox}
-        >
-          <button
-            onClick={closeLightbox}
-            className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          {photos.length > 1 && (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-4 text-white/70 hover:text-white z-10"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-4 text-white/70 hover:text-white z-10"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            </>
-          )}
-
-          <img
-            src={getFullUrl(photos[lightboxIndex].public_id)}
-            alt={`Photo ${lightboxIndex + 1}`}
-            className="max-w-full max-h-[85vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          <div className="absolute bottom-4 text-white/60 font-sans text-xs">
-            {lightboxIndex + 1} / {photos.length}
-          </div>
-        </div>
+        <LightboxOverlay
+          photos={photos}
+          index={lightboxIndex}
+          onClose={closeLightbox}
+          onNext={goNext}
+          onPrev={goPrev}
+        />
       )}
     </div>
   );
