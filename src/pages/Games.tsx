@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MemoryMatch from "@/games/MemoryMatch";
@@ -7,12 +8,19 @@ import WeddingWordle from "@/games/WeddingWordle";
 type GameView = "menu" | "memory" | "wordle";
 
 const Games = () => {
+  const [searchParams] = useSearchParams();
+  const gameParam = searchParams.get("game");
   const [view, setView] = useState<GameView>("menu");
+
+  useEffect(() => {
+    if (gameParam === "memory") setView("memory");
+    else if (gameParam === "wordle") setView("wordle");
+  }, [gameParam]);
 
   if (view !== "menu") {
     return (
       <div>
-        <div className="fixed top-4 left-4 z-50">
+        <div className="fixed top-4 left-4 z-50 flex gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -20,8 +28,17 @@ const Games = () => {
             className="font-sans border-primary text-primary hover:bg-primary hover:text-primary-foreground shadow-md"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
-            Powrót
+            Menu
           </Button>
+          <Link to="/">
+            <Button
+              variant="outline"
+              size="sm"
+              className="font-sans border-border text-foreground hover:bg-muted shadow-md"
+            >
+              ← Strona główna
+            </Button>
+          </Link>
         </div>
         {view === "memory" ? <MemoryMatch /> : <WeddingWordle />}
       </div>
@@ -39,7 +56,6 @@ const Games = () => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl w-full">
-        {/* Memory Match card */}
         <button
           onClick={() => setView("memory")}
           className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
@@ -51,12 +67,8 @@ const Games = () => {
           <p className="font-sans text-sm text-muted-foreground leading-relaxed">
             Odwracaj karty i znajdź wszystkie ślubne pary! Ile ruchów potrzebujesz?
           </p>
-          <p className="font-sans text-xs text-muted-foreground mt-2 italic">
-            Flip cards & find all wedding pairs!
-          </p>
         </button>
 
-        {/* Wordle card */}
         <button
           onClick={() => setView("wordle")}
           className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
@@ -66,20 +78,17 @@ const Games = () => {
             Wedding Wordle
           </h2>
           <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-            Odgadnij ślubne słowo w 6 próbach! Dostępne w 🇵🇱 🇮🇹 🇷🇸
-          </p>
-          <p className="font-sans text-xs text-muted-foreground mt-2 italic">
-            Guess the wedding word in 6 tries! PL + IT & SR trial modes
+            Odgadnij ślubne słowo w 6 próbach! 🇵🇱 🇮🇹 🇷🇸
           </p>
         </button>
       </div>
 
-      <a
-        href="/"
+      <Link
+        to="/"
         className="mt-10 font-sans text-sm text-primary hover:underline"
       >
         ← Wróć na stronę główną / Back to main page
-      </a>
+      </Link>
     </div>
   );
 };

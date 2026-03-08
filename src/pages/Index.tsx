@@ -1,29 +1,39 @@
-import { Link } from "react-router-dom";
-import { Gamepad2 } from "lucide-react";
+import { LangProvider } from "@/contexts/LangContext";
+import { useUnlock } from "@/hooks/useUnlock";
+import Navbar from "@/components/wedding/Navbar";
+import Hero from "@/components/wedding/Hero";
+import Schedule from "@/components/wedding/Schedule";
+import RSVPForm from "@/components/wedding/RSVPForm";
+import Accommodations from "@/components/wedding/Accommodations";
+import Activities from "@/components/wedding/Activities";
+import GamesSection from "@/components/wedding/GamesSection";
+import LockedSections from "@/components/wedding/LockedSections";
+import UnlockModal from "@/components/wedding/UnlockModal";
+import Footer from "@/components/wedding/Footer";
 
-const Index = () => {
+const IndexContent = () => {
+  const { unlocked, showModal, setShowModal, tryUnlock, checkPassword, adminUnlock } = useUnlock();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center px-4">
-        <h1 className="font-script text-5xl md:text-7xl text-primary mb-4">
-          Marta & Jakub
-        </h1>
-        <p className="font-serif text-xl text-muted-foreground mb-2">
-          08.08.2026
-        </p>
-        <p className="font-sans text-muted-foreground mb-8">
-          Gdańsk, Pomorskie
-        </p>
-        <Link
-          to="/games"
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-sans font-semibold hover:opacity-90 transition-opacity shadow-lg"
-        >
-          <Gamepad2 className="w-5 h-5" />
-          Gry Weselne / Wedding Games
-        </Link>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Navbar unlocked={unlocked} onTryUnlock={tryUnlock} />
+      <Hero />
+      <Schedule />
+      <RSVPForm />
+      <Accommodations />
+      <Activities />
+      <GamesSection />
+      <LockedSections unlocked={unlocked} />
+      <UnlockModal open={showModal} onClose={() => setShowModal(false)} onSubmit={checkPassword} />
+      <Footer onAdminUnlock={adminUnlock} />
     </div>
   );
 };
+
+const Index = () => (
+  <LangProvider>
+    <IndexContent />
+  </LangProvider>
+);
 
 export default Index;
