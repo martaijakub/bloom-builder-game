@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search } from "lucide-react";
 
 // ---- Types ----
 interface Guest {
