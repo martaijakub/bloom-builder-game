@@ -459,7 +459,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
       setTables((prev) => {
-        saveTables(prev);
+        saveAdminTables(prev);
         return prev;
       });
     };
