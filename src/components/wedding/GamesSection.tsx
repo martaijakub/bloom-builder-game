@@ -17,7 +17,7 @@ const GamesSection = () => {
         )}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         <Link
           to="/games?game=memory"
           className="group bg-card rounded-xl p-8 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left block"
@@ -46,6 +46,22 @@ const GamesSection = () => {
             {t(
               "Odgadnij ślubne słowo w 6 próbach! 🇵🇱 🇮🇹 🇷🇸",
               "Guess the wedding word in 6 tries! 🇵🇱 🇮🇹 🇷🇸"
+            )}
+          </p>
+        </Link>
+
+        <Link
+          to="/games?game=tripeaks"
+          className="group bg-card rounded-xl p-8 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left block"
+        >
+          <div className="text-5xl mb-4">🏔️</div>
+          <h3 className="font-serif text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
+            TriPeaks Solitaire
+          </h3>
+          <p className="font-sans text-sm text-muted-foreground">
+            {t(
+              "Klasyczny pasjans TriPeaks w ślubnym stylu!",
+              "Classic TriPeaks solitaire, wedding style!"
             )}
           </p>
         </Link>

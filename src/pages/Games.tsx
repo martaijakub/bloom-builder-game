@@ -57,7 +57,7 @@ const Games = () => {
         Baw się dobrze czekając na wielki dzień! / Have fun while waiting for the big day!
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
         <button
           onClick={() => setView("memory")}
           className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
@@ -81,6 +81,19 @@ const Games = () => {
           </h2>
           <p className="font-sans text-sm text-muted-foreground leading-relaxed">
             Odgadnij ślubne słowo w 6 próbach! 🇵🇱 🇮🇹 🇷🇸
+          </p>
+        </button>
+
+        <button
+          onClick={() => setView("tripeaks")}
+          className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2 border-transparent hover:border-primary text-left"
+        >
+          <div className="text-5xl mb-4">🏔️</div>
+          <h2 className="font-serif text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
+            TriPeaks Solitaire
+          </h2>
+          <p className="font-sans text-sm text-muted-foreground leading-relaxed">
+            Klasyczny pasjans TriPeaks w ślubnym stylu! Buduj serie i zdobywaj punkty!
           </p>
         </button>
       </div>
