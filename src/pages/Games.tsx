@@ -4,8 +4,9 @@ import { ArrowLeft, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MemoryMatch from "@/games/MemoryMatch";
 import WeddingWordle from "@/games/WeddingWordle";
+import TriPeaksSolitaire from "@/games/TriPeaksSolitaire";
 
-type GameView = "menu" | "memory" | "wordle";
+type GameView = "menu" | "memory" | "wordle" | "tripeaks";
 
 const Games = () => {
   const [searchParams] = useSearchParams();
