@@ -42,7 +42,7 @@ const Games = () => {
             </Button>
           </Link>
         </div>
-        {view === "memory" ? <MemoryMatch /> : <WeddingWordle />}
+        {view === "memory" ? <MemoryMatch /> : view === "wordle" ? <WeddingWordle /> : <TriPeaksSolitaire />}
       </div>
     );
   }
