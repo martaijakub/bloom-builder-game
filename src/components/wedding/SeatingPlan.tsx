@@ -21,7 +21,7 @@ interface TableData {
 // ---- Default data ----
 const DEFAULT_TABLES: TableData[] = [
   {
-    id: "t1", label: "Stół 1", x: 50, y: 15,
+    id: "t1", label: "Stół 1", x: 50, y: 15, width: 180, height: 80,
     guests: [
       { id: "g1", name: "Rodzice Panny Młodej" },
       { id: "g2", name: "Rodzice Pana Młodego" },
@@ -30,7 +30,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t2", label: "Stół 2", x: 25, y: 45,
+    id: "t2", label: "Stół 2", x: 25, y: 45, width: 160, height: 70,
     guests: [
       { id: "g5", name: "Anna & Tomek" },
       { id: "g6", name: "Kasia & Paweł" },
@@ -39,7 +39,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t3", label: "Stół 3", x: 75, y: 45,
+    id: "t3", label: "Stół 3", x: 75, y: 45, width: 160, height: 70,
     guests: [
       { id: "g9", name: "Marco & Elena" },
       { id: "g10", name: "Luka & Mila" },
@@ -47,7 +47,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t4", label: "Stół 4", x: 25, y: 75,
+    id: "t4", label: "Stół 4", x: 25, y: 75, width: 160, height: 70,
     guests: [
       { id: "g12", name: "Ewa & Jan" },
       { id: "g13", name: "Zosia & Marek" },
@@ -56,7 +56,7 @@ const DEFAULT_TABLES: TableData[] = [
     ],
   },
   {
-    id: "t5", label: "Stół 5", x: 75, y: 75,
+    id: "t5", label: "Stół 5", x: 75, y: 75, width: 160, height: 70,
     guests: [
       { id: "g16", name: "Piotr & Agata" },
       { id: "g17", name: "Kamil & Natalia" },
