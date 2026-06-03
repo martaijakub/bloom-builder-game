@@ -70,7 +70,7 @@ const RSVPForm = () => {
             RSVP
           </h2>
           <p className="font-sans text-sm text-muted-foreground">
-            {t("Prosimy o odpowiedź do 30 maja 2026", "Please respond by May 30, 2026")}
+            {t("Prosimy o odpowiedź jak najszybciej w celu jak najlepszej organizacji naszego Wielkiego dnia", "Please respond as soon as possible for the best organization of our Big Day")}
           </p>
         </div>
 
