@@ -480,6 +480,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   }, [isAdmin]);
 
   const addTable = () => {
+    if (tables.length >= MAX_TABLES) return;
     const newTable: TableData = {
       id: `t_${Date.now()}`,
       label: `Stół ${tables.length + 1}`,
