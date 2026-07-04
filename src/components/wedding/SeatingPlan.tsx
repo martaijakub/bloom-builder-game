@@ -354,8 +354,8 @@ const TableEditor = ({
             </label>
             <input
               type="range"
-              min="100"
-              max="300"
+              min="50"
+              max="500"
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
               className="w-full accent-primary"
@@ -368,7 +368,7 @@ const TableEditor = ({
             <input
               type="range"
               min="50"
-              max="150"
+              max="500"
               value={height}
               onChange={(e) => setHeight(Number(e.target.value))}
               className="w-full accent-primary"
