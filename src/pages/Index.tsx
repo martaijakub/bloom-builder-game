@@ -17,10 +17,8 @@ const IndexContent = () => {
       <Navbar unlocked={unlocked} onTryUnlock={tryUnlock} />
       <Hero />
       <Schedule />
-      <RSVPForm />
       <Accommodations />
       <Activities />
-      <GamesSection />
       <LockedSections unlocked={unlocked} isAdmin={isAdmin} />
       <UnlockModal open={showModal} onClose={() => setShowModal(false)} onSubmit={checkPassword} />
       <Footer onAdminUnlock={adminUnlock} />
