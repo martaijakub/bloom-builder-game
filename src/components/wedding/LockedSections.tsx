@@ -182,20 +182,56 @@ const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
 
   if (!unlocked) {
     return (
-      <section className="py-20 px-6 text-center">
-        <div className="max-w-md mx-auto">
-          <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center mx-auto mb-5">
-            <Calendar className="w-6 h-6 text-wedding-gold" />
+      <section id="coming-soon" className="py-28 md:py-36 px-6 bg-accent/30">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
+              {t("Wkrótce dostępne", "Coming Soon")}
+            </p>
+            <h2 className="font-serif text-5xl md:text-6xl font-light text-foreground tracking-tight mb-4">
+              {t("W tygodniu wesela", "In the Wedding Week")}
+            </h2>
+            <p className="font-sans text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              {t(
+                "Te dwa obszary otworzą się dla Was od 3 sierpnia 2026 — tuż przed naszym Wielkim Dniem.",
+                "These two areas will open for you from August 3, 2026 — just before our Big Day."
+              )}
+            </p>
           </div>
-          <h2 className="font-serif text-3xl font-light text-foreground mb-3">
-            {t("Wkrótce dostępne", "Coming Soon")}
-          </h2>
-          <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-            {t(
-              "Układ stołów i foto-wyzwania będą dostępne od 3 do 15 sierpnia 2026.",
-              "Seating plan and photo challenges will be available from August 3 to 15, 2026."
-            )}
-          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+              <div className="text-5xl mb-5">🍽️</div>
+              <h3 className="font-serif text-2xl font-light text-foreground mb-3 tracking-tight">
+                {t("Układ Stołów", "Seating Plan")}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+                {t(
+                  "Znajdź swoje miejsce na sali i sprawdź, kto siedzi obok Was.",
+                  "Find your seat in the hall and see who's next to you."
+                )}
+              </p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+                {t("Dostępne od 3.08.2026", "Available from 3 Aug 2026")}
+              </p>
+            </div>
+
+            <div className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+              <div className="text-5xl mb-5">📸</div>
+              <h3 className="font-serif text-2xl font-light text-foreground mb-3 tracking-tight">
+                {t("Foto-Wyzwania", "Photo Challenges")}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+                {t(
+                  "Uchwyćcie z nami najpiękniejsze momenty wesela i podzielcie się nimi.",
+                  "Capture the most beautiful wedding moments with us and share them."
+                )}
+              </p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+                {t("Dostępne od 3.08.2026", "Available from 3 Aug 2026")}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     );

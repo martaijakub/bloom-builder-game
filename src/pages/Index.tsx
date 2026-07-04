@@ -3,10 +3,8 @@ import { useUnlock } from "@/hooks/useUnlock";
 import Navbar from "@/components/wedding/Navbar";
 import Hero from "@/components/wedding/Hero";
 import Schedule from "@/components/wedding/Schedule";
-import RSVPForm from "@/components/wedding/RSVPForm";
 import Accommodations from "@/components/wedding/Accommodations";
 import Activities from "@/components/wedding/Activities";
-import GamesSection from "@/components/wedding/GamesSection";
 import LockedSections from "@/components/wedding/LockedSections";
 import UnlockModal from "@/components/wedding/UnlockModal";
 import Footer from "@/components/wedding/Footer";
@@ -19,10 +17,8 @@ const IndexContent = () => {
       <Navbar unlocked={unlocked} onTryUnlock={tryUnlock} />
       <Hero />
       <Schedule />
-      <RSVPForm />
       <Accommodations />
       <Activities />
-      <GamesSection />
       <LockedSections unlocked={unlocked} isAdmin={isAdmin} />
       <UnlockModal open={showModal} onClose={() => setShowModal(false)} onSubmit={checkPassword} />
       <Footer onAdminUnlock={adminUnlock} />
