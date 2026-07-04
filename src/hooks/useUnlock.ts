@@ -18,9 +18,11 @@ export const useUnlock = () => {
   );
   const [showModal, setShowModal] = useState(false);
   const [targetSection, setTargetSection] = useState("");
+  const [previewAsGuest, setPreviewAsGuest] = useState(false);
 
   const dateUnlocked = isDateUnlocked();
-  const unlocked = dateUnlocked || adminUnlocked;
+  const isAdmin = adminUnlocked && !previewAsGuest;
+  const unlocked = previewAsGuest ? dateUnlocked : (dateUnlocked || adminUnlocked);
 
   const tryUnlock = useCallback((sectionName: string) => {
     if (unlocked) {
@@ -48,6 +50,15 @@ export const useUnlock = () => {
     setShowModal(false);
   }, []);
 
+  const adminLogout = useCallback(() => {
+    localStorage.removeItem(UNLOCK_KEY);
+    setAdminUnlocked(false);
+    setPreviewAsGuest(false);
+  }, []);
+
+  const openLoginModal = useCallback(() => setShowModal(true), []);
+  const togglePreviewAsGuest = useCallback(() => setPreviewAsGuest((v) => !v), []);
+
   const scrollTo = (name: string) => {
     setTimeout(() => {
       const el = document.getElementById(name);
@@ -57,12 +68,17 @@ export const useUnlock = () => {
 
   return {
     unlocked,
-    isAdmin: adminUnlocked,
+    isAdmin,
+    adminUnlocked,
+    previewAsGuest,
     dateUnlocked,
     showModal,
     setShowModal,
     tryUnlock,
     checkPassword,
     adminUnlock,
+    adminLogout,
+    openLoginModal,
+    togglePreviewAsGuest,
   };
 };
