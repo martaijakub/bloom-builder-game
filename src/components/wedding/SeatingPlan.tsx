@@ -537,9 +537,11 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             </span>
             <button
               onClick={addTable}
-              className="flex items-center gap-1.5 font-sans text-xs text-primary hover:text-primary/80 border border-primary/30 px-3 py-1.5"
+              disabled={tables.length >= MAX_TABLES}
+              className="flex items-center gap-1.5 font-sans text-xs text-primary hover:text-primary/80 border border-primary/30 px-3 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              title={tables.length >= MAX_TABLES ? t("Max 5 stołów", "Max 5 tables") : ""}
             >
-              <Plus className="w-3.5 h-3.5" /> {t("Dodaj stół", "Add Table")}
+              <Plus className="w-3.5 h-3.5" /> {t("Dodaj stół", "Add Table")} ({tables.length}/{MAX_TABLES})
             </button>
             <button
               onClick={() => exportTablesJSON(tables)}
