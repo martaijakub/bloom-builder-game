@@ -253,11 +253,14 @@ const TableVisual = ({
                 transform: "translate(-50%, -50%)",
               }}
               onMouseDown={isAdmin ? (e) => handleSeatDragStart(e, guest.id) : undefined}
+              title={guest.name}
             >
-              <div className={`bg-card border rounded px-2 py-0.5 shadow-sm whitespace-nowrap transition-shadow ${
-                isAdmin ? "border-primary/40 hover:shadow-md hover:border-primary" : "border-border/60"
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-card border shadow-sm transition-shadow ${
+                isAdmin ? "border-primary/40 hover:shadow-md hover:border-primary" : "border-wedding-gold/40"
               }`}>
-                <span className="font-sans text-[9px] text-foreground">{guest.name}</span>
+                <span className="font-serif text-[10px] font-medium text-foreground leading-none">
+                  {getInitials(guest.name)}
+                </span>
               </div>
             </div>
           );
