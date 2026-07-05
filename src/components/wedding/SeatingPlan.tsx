@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Cloud, Loader2 } from "lucide-react";
 import seatingData from "@/data/seatingPlan.json";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // ---- Types ----
 interface Guest {
@@ -31,25 +33,32 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Guests always see the JSON file data
-function getPublicTables(): TableData[] {
-  return seatingData as TableData[];
+// Fetch the published seating plan from the backend (visible to all guests).
+async function fetchPublishedTables(): Promise<TableData[]> {
+  const { data, error } = await supabase
+    .from("seating_plan")
+    .select("data")
+    .eq("id", "main")
+    .maybeSingle();
+  if (error || !data?.data) return seatingData as TableData[];
+  const parsed = data.data as unknown;
+  return Array.isArray(parsed) && parsed.length > 0 ? (parsed as TableData[]) : (seatingData as TableData[]);
 }
 
-// Admin loads from localStorage (draft), falls back to JSON
-function loadAdminTables(): TableData[] {
+// Admin loads from localStorage (draft); falls back to bundled JSON at first load.
+function loadAdminDraft(): TableData[] | null {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
-  return seatingData as TableData[];
+  return null;
 }
 
-function saveAdminTables(tables: TableData[]) {
+function saveAdminDraft(tables: TableData[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tables));
 }
 
-// Export current admin layout as JSON for copying into seatingPlan.json
+// Export current admin layout as JSON (backup)
 function exportTablesJSON(tables: TableData[]) {
   const json = JSON.stringify(tables, null, 2);
   const blob = new Blob([json], { type: "application/json" });
@@ -59,6 +68,16 @@ function exportTablesJSON(tables: TableData[]) {
   a.download = "seatingPlan.json";
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// Publish current admin draft to backend so all guests see it.
+async function publishTables(tables: TableData[]): Promise<{ ok: boolean; error?: string }> {
+  const { data, error } = await supabase.functions.invoke("save-seating-plan", {
+    body: { password: ADMIN_PASS, data: tables },
+  });
+  if (error) return { ok: false, error: error.message };
+  if (data?.error) return { ok: false, error: data.error };
+  return { ok: true };
 }
 
 // ---- Admin password modal ----
@@ -423,10 +442,10 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [adminMode, setAdminMode] = useState(false);
   const isAdmin = adminMode || !!isAdminProp;
 
-  // Admin sees draft from localStorage; guests see the committed JSON file
-  const [tables, setTables] = useState<TableData[]>(() =>
-    isAdmin ? loadAdminTables() : getPublicTables()
-  );
+  // Load published plan from backend for everyone; admin can then edit a local draft.
+  const [tables, setTables] = useState<TableData[]>(() => (seatingData as TableData[]));
+  const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -434,10 +453,39 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
-  // Switch data source when admin mode toggles
+  // On mount / when switching between admin and guest, load appropriate source.
   useEffect(() => {
-    setTables(isAdmin ? loadAdminTables() : getPublicTables());
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      if (isAdmin) {
+        // Admin: prefer local draft if present, otherwise seed from published version.
+        const draft = loadAdminDraft();
+        if (draft) {
+          if (!cancelled) setTables(draft);
+        } else {
+          const published = await fetchPublishedTables();
+          if (!cancelled) setTables(published);
+        }
+      } else {
+        const published = await fetchPublishedTables();
+        if (!cancelled) setTables(published);
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => { cancelled = true; };
   }, [isAdmin]);
+
+  const handlePublish = async () => {
+    setPublishing(true);
+    const res = await publishTables(tables);
+    setPublishing(false);
+    if (res.ok) {
+      toast.success(t("Opublikowano — goście widzą nowy układ.", "Published — guests now see the new layout."));
+    } else {
+      toast.error(t("Błąd publikacji: ", "Publish failed: ") + (res.error ?? ""));
+    }
+  };
 
   // Find table IDs matching the search query
   const highlightedTableIds = searchQuery.trim().length >= 2
@@ -470,7 +518,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
       setTables((prev) => {
-        saveAdminTables(prev);
+        saveAdminDraft(prev);
         return prev;
       });
     };
@@ -492,27 +540,27 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
     };
     const updated = [...tables, newTable];
     setTables(updated);
-    saveAdminTables(updated);
+    saveAdminDraft(updated);
     setEditingTable(newTable);
   };
 
   const deleteTable = (id: string) => {
     const updated = tables.filter((t) => t.id !== id);
     setTables(updated);
-    saveAdminTables(updated);
+    saveAdminDraft(updated);
   };
 
   const saveEditedTable = (updated: TableData) => {
     const newTables = tables.map((t) => (t.id === updated.id ? updated : t));
     setTables(newTables);
-    saveAdminTables(newTables);
+    saveAdminDraft(newTables);
     setEditingTable(null);
   };
 
   const updateTableGuests = useCallback((tableId: string, guests: Guest[]) => {
     setTables((prev) => {
       const updated = prev.map((t) => (t.id === tableId ? { ...t, guests } : t));
-      saveAdminTables(updated);
+      saveAdminDraft(updated);
       return updated;
     });
   }, []);
@@ -530,7 +578,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             {t("Tryb admina", "Admin Mode")}
           </button>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-center">
             <span className="font-sans text-xs text-wedding-gold uppercase tracking-wider flex items-center gap-1.5">
               <Settings className="w-3.5 h-3.5" />
               {t("Tryb admina", "Admin Mode")}
@@ -544,10 +592,19 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
               <Plus className="w-3.5 h-3.5" /> {t("Dodaj stół", "Add Table")} ({tables.length}/{MAX_TABLES})
             </button>
             <button
+              onClick={handlePublish}
+              disabled={publishing}
+              className="flex items-center gap-1.5 font-sans text-xs text-white bg-wedding-sage hover:bg-wedding-sage/90 border border-wedding-sage px-3 py-1.5 disabled:opacity-50"
+              title={t("Zapisz układ dla wszystkich gości", "Save layout for all guests")}
+            >
+              {publishing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Cloud className="w-3.5 h-3.5" />}
+              {t("Publikuj dla gości", "Publish for guests")}
+            </button>
+            <button
               onClick={() => exportTablesJSON(tables)}
               className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 border border-wedding-gold/30 px-3 py-1.5"
             >
-              <Download className="w-3.5 h-3.5" /> {t("Eksportuj JSON", "Export JSON")}
+              <Download className="w-3.5 h-3.5" /> {t("Eksport (kopia)", "Export (backup)")}
             </button>
             <button
               onClick={() => setAdminMode(false)}
