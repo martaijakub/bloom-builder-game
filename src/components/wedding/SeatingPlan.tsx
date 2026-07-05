@@ -442,10 +442,10 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [adminMode, setAdminMode] = useState(false);
   const isAdmin = adminMode || !!isAdminProp;
 
-  // Admin sees draft from localStorage; guests see the committed JSON file
-  const [tables, setTables] = useState<TableData[]>(() =>
-    isAdmin ? loadAdminTables() : getPublicTables()
-  );
+  // Load published plan from backend for everyone; admin can then edit a local draft.
+  const [tables, setTables] = useState<TableData[]>(() => (seatingData as TableData[]));
+  const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [editingTable, setEditingTable] = useState<TableData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -453,10 +453,39 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
 
-  // Switch data source when admin mode toggles
+  // On mount / when switching between admin and guest, load appropriate source.
   useEffect(() => {
-    setTables(isAdmin ? loadAdminTables() : getPublicTables());
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      if (isAdmin) {
+        // Admin: prefer local draft if present, otherwise seed from published version.
+        const draft = loadAdminDraft();
+        if (draft) {
+          if (!cancelled) setTables(draft);
+        } else {
+          const published = await fetchPublishedTables();
+          if (!cancelled) setTables(published);
+        }
+      } else {
+        const published = await fetchPublishedTables();
+        if (!cancelled) setTables(published);
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => { cancelled = true; };
   }, [isAdmin]);
+
+  const handlePublish = async () => {
+    setPublishing(true);
+    const res = await publishTables(tables);
+    setPublishing(false);
+    if (res.ok) {
+      toast.success(t("Opublikowano — goście widzą nowy układ.", "Published — guests now see the new layout."));
+    } else {
+      toast.error(t("Błąd publikacji: ", "Publish failed: ") + (res.error ?? ""));
+    }
+  };
 
   // Find table IDs matching the search query
   const highlightedTableIds = searchQuery.trim().length >= 2
