@@ -518,7 +518,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
       setTables((prev) => {
-        saveAdminTables(prev);
+        saveAdminDraft(prev);
         return prev;
       });
     };
@@ -540,27 +540,27 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
     };
     const updated = [...tables, newTable];
     setTables(updated);
-    saveAdminTables(updated);
+    saveAdminDraft(updated);
     setEditingTable(newTable);
   };
 
   const deleteTable = (id: string) => {
     const updated = tables.filter((t) => t.id !== id);
     setTables(updated);
-    saveAdminTables(updated);
+    saveAdminDraft(updated);
   };
 
   const saveEditedTable = (updated: TableData) => {
     const newTables = tables.map((t) => (t.id === updated.id ? updated : t));
     setTables(newTables);
-    saveAdminTables(newTables);
+    saveAdminDraft(newTables);
     setEditingTable(null);
   };
 
   const updateTableGuests = useCallback((tableId: string, guests: Guest[]) => {
     setTables((prev) => {
       const updated = prev.map((t) => (t.id === tableId ? { ...t, guests } : t));
-      saveAdminTables(updated);
+      saveAdminDraft(updated);
       return updated;
     });
   }, []);
