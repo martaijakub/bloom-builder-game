@@ -578,7 +578,7 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             {t("Tryb admina", "Admin Mode")}
           </button>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-center">
             <span className="font-sans text-xs text-wedding-gold uppercase tracking-wider flex items-center gap-1.5">
               <Settings className="w-3.5 h-3.5" />
               {t("Tryb admina", "Admin Mode")}
@@ -592,10 +592,19 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
               <Plus className="w-3.5 h-3.5" /> {t("Dodaj stół", "Add Table")} ({tables.length}/{MAX_TABLES})
             </button>
             <button
+              onClick={handlePublish}
+              disabled={publishing}
+              className="flex items-center gap-1.5 font-sans text-xs text-white bg-wedding-sage hover:bg-wedding-sage/90 border border-wedding-sage px-3 py-1.5 disabled:opacity-50"
+              title={t("Zapisz układ dla wszystkich gości", "Save layout for all guests")}
+            >
+              {publishing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Cloud className="w-3.5 h-3.5" />}
+              {t("Publikuj dla gości", "Publish for guests")}
+            </button>
+            <button
               onClick={() => exportTablesJSON(tables)}
               className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 border border-wedding-gold/30 px-3 py-1.5"
             >
-              <Download className="w-3.5 h-3.5" /> {t("Eksportuj JSON", "Export JSON")}
+              <Download className="w-3.5 h-3.5" /> {t("Eksport (kopia)", "Export (backup)")}
             </button>
             <button
               onClick={() => setAdminMode(false)}
