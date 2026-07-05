@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Cloud, Loader2 } from "lucide-react";
 import seatingData from "@/data/seatingPlan.json";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // ---- Types ----
 interface Guest {
@@ -31,25 +33,32 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Guests always see the JSON file data
-function getPublicTables(): TableData[] {
-  return seatingData as TableData[];
+// Fetch the published seating plan from the backend (visible to all guests).
+async function fetchPublishedTables(): Promise<TableData[]> {
+  const { data, error } = await supabase
+    .from("seating_plan")
+    .select("data")
+    .eq("id", "main")
+    .maybeSingle();
+  if (error || !data?.data) return seatingData as TableData[];
+  const parsed = data.data as unknown;
+  return Array.isArray(parsed) && parsed.length > 0 ? (parsed as TableData[]) : (seatingData as TableData[]);
 }
 
-// Admin loads from localStorage (draft), falls back to JSON
-function loadAdminTables(): TableData[] {
+// Admin loads from localStorage (draft); falls back to bundled JSON at first load.
+function loadAdminDraft(): TableData[] | null {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
-  return seatingData as TableData[];
+  return null;
 }
 
-function saveAdminTables(tables: TableData[]) {
+function saveAdminDraft(tables: TableData[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tables));
 }
 
-// Export current admin layout as JSON for copying into seatingPlan.json
+// Export current admin layout as JSON (backup)
 function exportTablesJSON(tables: TableData[]) {
   const json = JSON.stringify(tables, null, 2);
   const blob = new Blob([json], { type: "application/json" });
@@ -59,6 +68,16 @@ function exportTablesJSON(tables: TableData[]) {
   a.download = "seatingPlan.json";
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// Publish current admin draft to backend so all guests see it.
+async function publishTables(tables: TableData[]): Promise<{ ok: boolean; error?: string }> {
+  const { data, error } = await supabase.functions.invoke("save-seating-plan", {
+    body: { password: ADMIN_PASS, data: tables },
+  });
+  if (error) return { ok: false, error: error.message };
+  if (data?.error) return { ok: false, error: data.error };
+  return { ok: true };
 }
 
 // ---- Admin password modal ----
