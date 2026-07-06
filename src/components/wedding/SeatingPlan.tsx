@@ -243,8 +243,9 @@ const TableVisual = ({
   return (
     <div
       ref={tableWrapperRef}
+      data-table
       className={`absolute -translate-x-1/2 -translate-y-1/2 group ${
-        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : ""
+        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : "cursor-pointer"
       }`}
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
