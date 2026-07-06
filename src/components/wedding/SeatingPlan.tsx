@@ -452,6 +452,39 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [selectedTable, setSelectedTable] = useState<TableData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-import of same file
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) throw new Error("JSON must be an array of tables");
+      if (parsed.length > MAX_TABLES) throw new Error(`Max ${MAX_TABLES} tables allowed`);
+      // Minimal shape validation
+      for (const t of parsed) {
+        if (typeof t?.id !== "string" || typeof t?.label !== "string" || !Array.isArray(t?.guests)) {
+          throw new Error("Invalid table shape");
+        }
+      }
+      const tablesToImport = parsed as TableData[];
+      setTables(tablesToImport);
+      saveAdminDraft(tablesToImport);
+      // Immediately publish so all guests see the imported layout.
+      setPublishing(true);
+      const res = await publishTables(tablesToImport);
+      setPublishing(false);
+      if (res.ok) {
+        toast.success(t("Zaimportowano i opublikowano ✓", "Imported and published ✓"));
+      } else {
+        toast.error(t("Zaimportowano lokalnie, publikacja nieudana: ", "Imported locally, publish failed: ") + (res.error ?? ""));
+      }
+    } catch (err) {
+      toast.error(t("Błąd importu: ", "Import error: ") + (err instanceof Error ? err.message : String(err)));
+    }
+  };
 
   // On mount / when switching between admin and guest, load appropriate source.
   useEffect(() => {
