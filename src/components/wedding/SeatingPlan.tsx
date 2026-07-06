@@ -234,9 +234,8 @@ const TableVisual = ({
   }, [isAdmin, width, height, guestsWithPos, table.id, onUpdateGuests]);
 
   const handleClick = () => {
-    if (!isAdmin && highlighted && onSelect) {
+    if (!isAdmin && onSelect) {
       onSelect(table);
-      tableWrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
 
