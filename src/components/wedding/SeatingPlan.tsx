@@ -908,8 +908,8 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         <div className="mt-8 text-center">
           <p className="font-sans text-xs text-muted-foreground">
             {t(
-              "Kliknij na podświetlony stół, aby zobaczyć listę gości.",
-              "Click a highlighted table to see the guest list."
+              "Dotknij stołu, aby zobaczyć listę gości. Przeciągnij mapę i użyj przycisków +/– lub gestów, aby powiększyć.",
+              "Tap a table to see the guest list. Drag the map and use +/– or pinch to zoom."
             )}
           </p>
         </div>
