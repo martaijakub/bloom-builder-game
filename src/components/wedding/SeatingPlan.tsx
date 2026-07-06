@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Cloud, Loader2 } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Upload, Cloud, Loader2 } from "lucide-react";
 import seatingData from "@/data/seatingPlan.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
