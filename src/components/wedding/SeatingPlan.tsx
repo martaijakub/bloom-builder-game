@@ -660,12 +660,6 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             >
               {t("Zamknij", "Exit")}
             </button>
-            <button
-              onClick={() => setAdminMode(false)}
-              className="font-sans text-xs text-muted-foreground hover:text-foreground border border-border/60 px-3 py-1.5"
-            >
-              {t("Zamknij", "Exit")}
-            </button>
           </div>
         )}
       </div>
