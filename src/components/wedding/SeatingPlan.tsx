@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Upload, Cloud, Loader2 } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Upload, Cloud, Loader2, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import seatingData from "@/data/seatingPlan.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -234,17 +234,17 @@ const TableVisual = ({
   }, [isAdmin, width, height, guestsWithPos, table.id, onUpdateGuests]);
 
   const handleClick = () => {
-    if (!isAdmin && highlighted && onSelect) {
+    if (!isAdmin && onSelect) {
       onSelect(table);
-      tableWrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
 
   return (
     <div
       ref={tableWrapperRef}
+      data-table
       className={`absolute -translate-x-1/2 -translate-y-1/2 group ${
-        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : ""
+        isAdmin ? "cursor-grab active:cursor-grabbing" : highlighted ? "cursor-pointer" : "cursor-pointer"
       }`}
       style={{ left: `${table.x}%`, top: `${table.y}%` }}
       onMouseDown={isAdmin && onDragStart ? (e) => onDragStart(e, table.id) : undefined}
@@ -453,6 +453,106 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+
+  // Pan/zoom viewport (guest mode only)
+  const [view, setView] = useState({ scale: 1, tx: 0, ty: 0 });
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const panStateRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
+  const pinchStateRef = useRef<{ dist: number; scale: number; cx: number; cy: number; tx: number; ty: number } | null>(null);
+
+  const clampScale = (s: number) => Math.max(0.4, Math.min(3, s));
+
+  const resetView = useCallback(() => setView({ scale: 1, tx: 0, ty: 0 }), []);
+
+  const zoomAt = useCallback((factor: number, cx?: number, cy?: number) => {
+    setView((v) => {
+      const rect = viewportRef.current?.getBoundingClientRect();
+      const px = cx ?? (rect ? rect.width / 2 : 0);
+      const py = cy ?? (rect ? rect.height / 2 : 0);
+      const newScale = clampScale(v.scale * factor);
+      const k = newScale / v.scale;
+      // Keep point (px,py) stable under scaling
+      const tx = px - k * (px - v.tx);
+      const ty = py - k * (py - v.ty);
+      return { scale: newScale, tx, ty };
+    });
+  }, []);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (isAdmin) return;
+    e.preventDefault();
+    const rect = viewportRef.current?.getBoundingClientRect();
+    const cx = rect ? e.clientX - rect.left : undefined;
+    const cy = rect ? e.clientY - rect.top : undefined;
+    const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+    zoomAt(factor, cx, cy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAdmin) return;
+    if (e.touches.length === 1) {
+      const t0 = e.touches[0];
+      panStateRef.current = { x: t0.clientX, y: t0.clientY, tx: view.tx, ty: view.ty };
+    } else if (e.touches.length === 2) {
+      const [a, b] = [e.touches[0], e.touches[1]];
+      const dx = b.clientX - a.clientX;
+      const dy = b.clientY - a.clientY;
+      const rect = viewportRef.current?.getBoundingClientRect();
+      const cx = (a.clientX + b.clientX) / 2 - (rect?.left ?? 0);
+      const cy = (a.clientY + b.clientY) / 2 - (rect?.top ?? 0);
+      pinchStateRef.current = {
+        dist: Math.hypot(dx, dy),
+        scale: view.scale,
+        cx, cy,
+        tx: view.tx, ty: view.ty,
+      };
+      panStateRef.current = null;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isAdmin) return;
+    if (e.touches.length === 2 && pinchStateRef.current) {
+      e.preventDefault();
+      const [a, b] = [e.touches[0], e.touches[1]];
+      const dist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+      const p = pinchStateRef.current;
+      const newScale = clampScale(p.scale * (dist / p.dist));
+      const k = newScale / p.scale;
+      const tx = p.cx - k * (p.cx - p.tx);
+      const ty = p.cy - k * (p.cy - p.ty);
+      setView({ scale: newScale, tx, ty });
+    } else if (e.touches.length === 1 && panStateRef.current) {
+      e.preventDefault();
+      const t0 = e.touches[0];
+      const p = panStateRef.current;
+      setView((v) => ({ ...v, tx: p.tx + (t0.clientX - p.x), ty: p.ty + (t0.clientY - p.y) }));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    panStateRef.current = null;
+    pinchStateRef.current = null;
+  };
+
+  const handleMouseDownPan = (e: React.MouseEvent) => {
+    if (isAdmin) return;
+    // Only start pan on background (not on a table). Tables handle their own clicks via stopPropagation? They don't; we check target.
+    if ((e.target as HTMLElement).closest("[data-table]")) return;
+    panStateRef.current = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty };
+    const onMove = (me: MouseEvent) => {
+      const p = panStateRef.current;
+      if (!p) return;
+      setView((v) => ({ ...v, tx: p.tx + (me.clientX - p.x), ty: p.ty + (me.clientY - p.y) }));
+    };
+    const onUp = () => {
+      panStateRef.current = null;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  };
 
   const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -690,29 +790,91 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
 
       {/* Floor plan */}
       <div
-        ref={containerRef}
-        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden"
-        style={{ aspectRatio: "16 / 10", minHeight: 400 }}
+        ref={viewportRef}
+        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden touch-none select-none"
+        style={{
+          height: isAdmin ? undefined : "min(70vh, 600px)",
+          aspectRatio: isAdmin ? "16 / 10" : undefined,
+          minHeight: isAdmin ? 400 : 380,
+          cursor: !isAdmin ? "grab" : undefined,
+        }}
+        onWheel={!isAdmin ? handleWheel : undefined}
+        onTouchStart={!isAdmin ? handleTouchStart : undefined}
+        onTouchMove={!isAdmin ? handleTouchMove : undefined}
+        onTouchEnd={!isAdmin ? handleTouchEnd : undefined}
+        onMouseDown={!isAdmin ? handleMouseDownPan : undefined}
       >
-        {/* Dance floor indicator */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
-          {t("Parkiet", "Dance Floor")} ↑
-        </div>
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border border-dashed border-wedding-gold/20" />
+        {/* Pan/zoom transform layer (guest) or static (admin) */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0"
+          style={
+            !isAdmin
+              ? {
+                  transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.scale})`,
+                  transformOrigin: "0 0",
+                  transition: panStateRef.current || pinchStateRef.current ? "none" : "transform 0.15s ease-out",
+                }
+              : undefined
+          }
+        >
+          {/* Dance floor indicator */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
+            {t("Parkiet", "Dance Floor")} ↑
+          </div>
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border border-dashed border-wedding-gold/20" />
 
-        {tables.map((table) => (
-          <TableVisual
-            key={table.id}
-            table={table}
-            isAdmin={isAdmin}
-            highlighted={highlightedTableIds.includes(table.id)}
-            onDragStart={handleDragStart}
-            onEdit={setEditingTable}
-            onDelete={deleteTable}
-            onUpdateGuests={updateTableGuests}
-            onSelect={setSelectedTable}
-          />
-        ))}
+          {tables.map((table) => (
+            <TableVisual
+              key={table.id}
+              table={table}
+              isAdmin={isAdmin}
+              highlighted={highlightedTableIds.includes(table.id)}
+              onDragStart={handleDragStart}
+              onEdit={setEditingTable}
+              onDelete={deleteTable}
+              onUpdateGuests={updateTableGuests}
+              onSelect={setSelectedTable}
+            />
+          ))}
+        </div>
+
+        {/* Zoom controls (guest only) */}
+        {!isAdmin && (
+          <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-20">
+            <button
+              onClick={() => zoomAt(1.2)}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Powiększ", "Zoom in")}
+              title={t("Powiększ", "Zoom in")}
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => zoomAt(1 / 1.2)}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Pomniejsz", "Zoom out")}
+              title={t("Pomniejsz", "Zoom out")}
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <button
+              onClick={resetView}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Resetuj widok", "Reset view")}
+              title={t("Resetuj widok", "Reset view")}
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Hint (guest only) */}
+        {!isAdmin && (
+          <div className="absolute bottom-3 left-3 font-sans text-[10px] uppercase tracking-wider text-muted-foreground/70 bg-card/70 backdrop-blur px-2 py-1 rounded pointer-events-none">
+            {t("Przeciągnij • Szczypnij aby powiększyć", "Drag • Pinch to zoom")}
+          </div>
+        )}
       </div>
 
       {/* Selected table detail */}
@@ -746,8 +908,8 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         <div className="mt-8 text-center">
           <p className="font-sans text-xs text-muted-foreground">
             {t(
-              "Kliknij na podświetlony stół, aby zobaczyć listę gości.",
-              "Click a highlighted table to see the guest list."
+              "Dotknij stołu, aby zobaczyć listę gości. Przeciągnij mapę i użyj przycisków +/– lub gestów, aby powiększyć.",
+              "Tap a table to see the guest list. Drag the map and use +/– or pinch to zoom."
             )}
           </p>
         </div>
