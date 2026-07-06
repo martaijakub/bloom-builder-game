@@ -454,6 +454,106 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const draggingRef = useRef<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
+  // Pan/zoom viewport (guest mode only)
+  const [view, setView] = useState({ scale: 1, tx: 0, ty: 0 });
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const panStateRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
+  const pinchStateRef = useRef<{ dist: number; scale: number; cx: number; cy: number; tx: number; ty: number } | null>(null);
+
+  const clampScale = (s: number) => Math.max(0.4, Math.min(3, s));
+
+  const resetView = useCallback(() => setView({ scale: 1, tx: 0, ty: 0 }), []);
+
+  const zoomAt = useCallback((factor: number, cx?: number, cy?: number) => {
+    setView((v) => {
+      const rect = viewportRef.current?.getBoundingClientRect();
+      const px = cx ?? (rect ? rect.width / 2 : 0);
+      const py = cy ?? (rect ? rect.height / 2 : 0);
+      const newScale = clampScale(v.scale * factor);
+      const k = newScale / v.scale;
+      // Keep point (px,py) stable under scaling
+      const tx = px - k * (px - v.tx);
+      const ty = py - k * (py - v.ty);
+      return { scale: newScale, tx, ty };
+    });
+  }, []);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (isAdmin) return;
+    e.preventDefault();
+    const rect = viewportRef.current?.getBoundingClientRect();
+    const cx = rect ? e.clientX - rect.left : undefined;
+    const cy = rect ? e.clientY - rect.top : undefined;
+    const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+    zoomAt(factor, cx, cy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAdmin) return;
+    if (e.touches.length === 1) {
+      const t0 = e.touches[0];
+      panStateRef.current = { x: t0.clientX, y: t0.clientY, tx: view.tx, ty: view.ty };
+    } else if (e.touches.length === 2) {
+      const [a, b] = [e.touches[0], e.touches[1]];
+      const dx = b.clientX - a.clientX;
+      const dy = b.clientY - a.clientY;
+      const rect = viewportRef.current?.getBoundingClientRect();
+      const cx = (a.clientX + b.clientX) / 2 - (rect?.left ?? 0);
+      const cy = (a.clientY + b.clientY) / 2 - (rect?.top ?? 0);
+      pinchStateRef.current = {
+        dist: Math.hypot(dx, dy),
+        scale: view.scale,
+        cx, cy,
+        tx: view.tx, ty: view.ty,
+      };
+      panStateRef.current = null;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isAdmin) return;
+    if (e.touches.length === 2 && pinchStateRef.current) {
+      e.preventDefault();
+      const [a, b] = [e.touches[0], e.touches[1]];
+      const dist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+      const p = pinchStateRef.current;
+      const newScale = clampScale(p.scale * (dist / p.dist));
+      const k = newScale / p.scale;
+      const tx = p.cx - k * (p.cx - p.tx);
+      const ty = p.cy - k * (p.cy - p.ty);
+      setView({ scale: newScale, tx, ty });
+    } else if (e.touches.length === 1 && panStateRef.current) {
+      e.preventDefault();
+      const t0 = e.touches[0];
+      const p = panStateRef.current;
+      setView((v) => ({ ...v, tx: p.tx + (t0.clientX - p.x), ty: p.ty + (t0.clientY - p.y) }));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    panStateRef.current = null;
+    pinchStateRef.current = null;
+  };
+
+  const handleMouseDownPan = (e: React.MouseEvent) => {
+    if (isAdmin) return;
+    // Only start pan on background (not on a table). Tables handle their own clicks via stopPropagation? They don't; we check target.
+    if ((e.target as HTMLElement).closest("[data-table]")) return;
+    panStateRef.current = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty };
+    const onMove = (me: MouseEvent) => {
+      const p = panStateRef.current;
+      if (!p) return;
+      setView((v) => ({ ...v, tx: p.tx + (me.clientX - p.x), ty: p.ty + (me.clientY - p.y) }));
+    };
+    const onUp = () => {
+      panStateRef.current = null;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  };
+
   const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-import of same file
