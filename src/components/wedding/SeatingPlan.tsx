@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Cloud, Loader2 } from "lucide-react";
+import { Lock, Settings, Save, X, Plus, Trash2, GripVertical, Search, Download, Upload, Cloud, Loader2 } from "lucide-react";
 import seatingData from "@/data/seatingPlan.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -452,6 +452,39 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const [selectedTable, setSelectedTable] = useState<TableData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-import of same file
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) throw new Error("JSON must be an array of tables");
+      if (parsed.length > MAX_TABLES) throw new Error(`Max ${MAX_TABLES} tables allowed`);
+      // Minimal shape validation
+      for (const t of parsed) {
+        if (typeof t?.id !== "string" || typeof t?.label !== "string" || !Array.isArray(t?.guests)) {
+          throw new Error("Invalid table shape");
+        }
+      }
+      const tablesToImport = parsed as TableData[];
+      setTables(tablesToImport);
+      saveAdminDraft(tablesToImport);
+      // Immediately publish so all guests see the imported layout.
+      setPublishing(true);
+      const res = await publishTables(tablesToImport);
+      setPublishing(false);
+      if (res.ok) {
+        toast.success(t("Zaimportowano i opublikowano ✓", "Imported and published ✓"));
+      } else {
+        toast.error(t("Zaimportowano lokalnie, publikacja nieudana: ", "Imported locally, publish failed: ") + (res.error ?? ""));
+      }
+    } catch (err) {
+      toast.error(t("Błąd importu: ", "Import error: ") + (err instanceof Error ? err.message : String(err)));
+    }
+  };
 
   // On mount / when switching between admin and guest, load appropriate source.
   useEffect(() => {
@@ -606,6 +639,21 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
             >
               <Download className="w-3.5 h-3.5" /> {t("Eksport (kopia)", "Export (backup)")}
             </button>
+            <button
+              onClick={() => importInputRef.current?.click()}
+              disabled={publishing}
+              className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 border border-wedding-gold/30 px-3 py-1.5 disabled:opacity-50"
+              title={t("Wczytaj JSON i opublikuj dla wszystkich", "Import JSON and publish for everyone")}
+            >
+              <Upload className="w-3.5 h-3.5" /> {t("Import JSON", "Import JSON")}
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={handleImportFile}
+              className="hidden"
+            />
             <button
               onClick={() => setAdminMode(false)}
               className="font-sans text-xs text-muted-foreground hover:text-foreground border border-border/60 px-3 py-1.5"
