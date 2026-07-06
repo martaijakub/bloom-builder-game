@@ -790,29 +790,91 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
 
       {/* Floor plan */}
       <div
-        ref={containerRef}
-        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden"
-        style={{ aspectRatio: "16 / 10", minHeight: 400 }}
+        ref={viewportRef}
+        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden touch-none select-none"
+        style={{
+          height: isAdmin ? undefined : "min(70vh, 600px)",
+          aspectRatio: isAdmin ? "16 / 10" : undefined,
+          minHeight: isAdmin ? 400 : 380,
+          cursor: !isAdmin ? "grab" : undefined,
+        }}
+        onWheel={!isAdmin ? handleWheel : undefined}
+        onTouchStart={!isAdmin ? handleTouchStart : undefined}
+        onTouchMove={!isAdmin ? handleTouchMove : undefined}
+        onTouchEnd={!isAdmin ? handleTouchEnd : undefined}
+        onMouseDown={!isAdmin ? handleMouseDownPan : undefined}
       >
-        {/* Dance floor indicator */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
-          {t("Parkiet", "Dance Floor")} ↑
-        </div>
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border border-dashed border-wedding-gold/20" />
+        {/* Pan/zoom transform layer (guest) or static (admin) */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0"
+          style={
+            !isAdmin
+              ? {
+                  transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.scale})`,
+                  transformOrigin: "0 0",
+                  transition: panStateRef.current || pinchStateRef.current ? "none" : "transform 0.15s ease-out",
+                }
+              : undefined
+          }
+        >
+          {/* Dance floor indicator */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
+            {t("Parkiet", "Dance Floor")} ↑
+          </div>
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border border-dashed border-wedding-gold/20" />
 
-        {tables.map((table) => (
-          <TableVisual
-            key={table.id}
-            table={table}
-            isAdmin={isAdmin}
-            highlighted={highlightedTableIds.includes(table.id)}
-            onDragStart={handleDragStart}
-            onEdit={setEditingTable}
-            onDelete={deleteTable}
-            onUpdateGuests={updateTableGuests}
-            onSelect={setSelectedTable}
-          />
-        ))}
+          {tables.map((table) => (
+            <TableVisual
+              key={table.id}
+              table={table}
+              isAdmin={isAdmin}
+              highlighted={highlightedTableIds.includes(table.id)}
+              onDragStart={handleDragStart}
+              onEdit={setEditingTable}
+              onDelete={deleteTable}
+              onUpdateGuests={updateTableGuests}
+              onSelect={setSelectedTable}
+            />
+          ))}
+        </div>
+
+        {/* Zoom controls (guest only) */}
+        {!isAdmin && (
+          <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-20">
+            <button
+              onClick={() => zoomAt(1.2)}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Powiększ", "Zoom in")}
+              title={t("Powiększ", "Zoom in")}
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => zoomAt(1 / 1.2)}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Pomniejsz", "Zoom out")}
+              title={t("Pomniejsz", "Zoom out")}
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <button
+              onClick={resetView}
+              className="w-9 h-9 flex items-center justify-center bg-card/90 backdrop-blur border border-border/60 shadow hover:bg-card"
+              aria-label={t("Resetuj widok", "Reset view")}
+              title={t("Resetuj widok", "Reset view")}
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Hint (guest only) */}
+        {!isAdmin && (
+          <div className="absolute bottom-3 left-3 font-sans text-[10px] uppercase tracking-wider text-muted-foreground/70 bg-card/70 backdrop-blur px-2 py-1 rounded pointer-events-none">
+            {t("Przeciągnij • Szczypnij aby powiększyć", "Drag • Pinch to zoom")}
+          </div>
+        )}
       </div>
 
       {/* Selected table detail */}
