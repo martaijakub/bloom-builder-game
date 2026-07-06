@@ -640,6 +640,27 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
               <Download className="w-3.5 h-3.5" /> {t("Eksport (kopia)", "Export (backup)")}
             </button>
             <button
+              onClick={() => importInputRef.current?.click()}
+              disabled={publishing}
+              className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 border border-wedding-gold/30 px-3 py-1.5 disabled:opacity-50"
+              title={t("Wczytaj JSON i opublikuj dla wszystkich", "Import JSON and publish for everyone")}
+            >
+              <Upload className="w-3.5 h-3.5" /> {t("Import JSON", "Import JSON")}
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={handleImportFile}
+              className="hidden"
+            />
+            <button
+              onClick={() => setAdminMode(false)}
+              className="font-sans text-xs text-muted-foreground hover:text-foreground border border-border/60 px-3 py-1.5"
+            >
+              {t("Zamknij", "Exit")}
+            </button>
+            <button
               onClick={() => setAdminMode(false)}
               className="font-sans text-xs text-muted-foreground hover:text-foreground border border-border/60 px-3 py-1.5"
             >
