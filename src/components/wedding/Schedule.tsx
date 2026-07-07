@@ -98,27 +98,30 @@ const Schedule = () => {
 
   const events: EventCardProps[] = [
     {
-      titlePl: "Ślub", titleEn: "Ceremony",
+      titlePl: "Ślub i wesele", titleEn: "Ceremony & Reception",
       lines: [
         { pl: "Ceremonia | 14:00", en: "Ceremony | 2:00 PM", accent: true },
-        { pl: "Kościół św. Jakuba", en: "St. James Church", subtle: true },
-        { pl: "Oliwa, Gdańsk", en: "Oliwa, Gdansk" },
-      ],
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2318.5!2d18.5556!3d54.4103!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd0a1a2a7e0001%3A0x4e0b9c71e57e9b0!2sKo%C5%9Bci%C3%B3%C5%82%20%C5%9Bw.%20Jakuba%20Aposto%C5%82a!5e0!3m2!1spl!2spl!4v1700000000000",
-      directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Kościół+św.+Jakuba+Oliwa+Gdańsk",
-    },
-    {
-      titlePl: "Wesele", titleEn: "Reception",
-      lines: [
+        { pl: "Kościół św. Jakuba, Oliwa, Gdańsk", en: "St. James Church, Oliwa, Gdansk", subtle: true },
         { pl: "Wesele | 16:00", en: "Reception | 4:00 PM", accent: true },
-        { pl: "Restauracja Tabun", en: "Tabun Restaurant", subtle: true },
-        { pl: "ul. Konna 29, Otomin, Gdańsk", en: "29 Konna Street, Otomin, Gdansk" },
+        { pl: "Restauracja Tabun, ul. Konna 29, Otomin, Gdańsk", en: "Tabun Restaurant, 29 Konna Street, Otomin, Gdansk", subtle: true },
       ],
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2320.0!2d18.5280!3d54.3680!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd744db9d1c64f%3A0x4b8a1d3f1c8f1c0a!2sRestauracja%20Tabun!5e0!3m2!1spl!2spl!4v1700000000000",
-      directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Restauracja+Tabun+Otomin+Gdańsk",
+      maps: [
+        {
+          labelPl: "Pokaż mapę kościoła",
+          labelEn: "Show church map",
+          mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2318.5!2d18.5556!3d54.4103!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd0a1a2a7e0001%3A0x4e0b9c71e57e9b0!2sKo%C5%9Bci%C3%B3%C5%82%20%C5%9Bw.%20Jakuba%20Aposto%C5%82a!5e0!3m2!1spl!2spl!4v1700000000000",
+          directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Kościół+św.+Jakuba+Oliwa+Gdańsk",
+        },
+        {
+          labelPl: "Pokaż mapę restauracji",
+          labelEn: "Show restaurant map",
+          mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2320.0!2d18.5280!3d54.3680!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46fd744db9d1c64f%3A0x4b8a1d3f1c8f1c0a!2sRestauracja%20Tabun!5e0!3m2!1spl!2spl!4v1700000000000",
+          directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Restauracja+Tabun+Otomin+Gdańsk",
+        },
+      ],
     },
     {
-      titlePl: "Dress code", titleEn: "Dress Code",
+      titlePl: "Dress Code", titleEn: "Dress Code",
       lines: [
         { pl: "Strój wizytowy", en: "Formal Attire", accent: true },
         { pl: "Panie: suknia koktajlowa lub wieczorowa", en: "Ladies: cocktail dress or gown" },
@@ -135,7 +138,7 @@ const Schedule = () => {
       titlePl: "Prezenty", titleEn: "Gifts",
       lines: [
         { pl: "Jeśli planujecie podarunek, będziemy wdzięczni za upominek w kopercie, który pomoże nam realizować wspólne plany i marzenia.", en: "If you are planning a gift, we would be grateful for a contribution in an envelope to help us achieve our shared plans and dreams." },
-        { pl: "Zamiast kwiatów, mile widziana butelka wina lub zdrapka/kupon lotto — mały gest, który sprawi nam radość.", en: "Instead of flowers, a bottle of wine or a lottery scratch card/ticket would be warmly welcomed — a small gesture that will bring us joy." },
+        { pl: "Zamiast kwiatów, mile widziana butelka wina lub zdrapka/kupon lotto.", en: "Instead of flowers, a bottle of wine or a lottery scratch card/ticket would be warmly welcomed." },
       ],
     },
     {
