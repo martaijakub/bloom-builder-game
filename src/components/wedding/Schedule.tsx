@@ -123,6 +123,15 @@ const Schedule = () => {
       titlePl: "Prezenty", titleEn: "Gifts",
       lines: [
         { pl: "Jeśli planujecie podarunek, będziemy wdzięczni za upominek w kopercie, który pomoże nam realizować wspólne plany i marzenia.", en: "If you are planning a gift, we would be grateful for a contribution in an envelope to help us achieve our shared plans and dreams." },
+        { pl: "Zamiast kwiatów, mile widziana butelka wina lub zdrapka/kupon lotto — mały gest, który sprawi nam radość.", en: "Instead of flowers, a bottle of wine or a lottery scratch card/ticket would be warmly welcomed — a small gesture that will bring us joy." },
+      ],
+    },
+    {
+      titlePl: "Świadkowie", titleEn: "Witnesses",
+      lines: [
+        { pl: "W dniu ślubu świadkowie przejmują charakter organizatorów, a Państwo Młodzi przychodzą jako goście.", en: "On the wedding day, the witnesses take on the role of organizers, while the Bride and Groom arrive as guests." },
+        { pl: "Świadek — Piotr Serednicki", en: "Witness — Piotr Serednicki", subtle: true },
+        { pl: "Świadkowa — Joanna Gołębiewska", en: "Witness — Joanna Gołębiewska", subtle: true },
       ],
     },
     {
