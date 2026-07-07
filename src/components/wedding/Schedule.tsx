@@ -3,17 +3,23 @@ import { useReveal } from "@/hooks/useReveal";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
 
+interface EventMap {
+  mapUrl: string;
+  directionsUrl?: string;
+  labelPl: string;
+  labelEn: string;
+}
+
 interface EventCardProps {
   titlePl: string;
   titleEn: string;
   lines: { pl: string; en: string; accent?: boolean; subtle?: boolean }[];
-  mapUrl?: string;
-  directionsUrl?: string;
+  maps?: EventMap[];
 }
 
-const EventCard = ({ titlePl, titleEn, lines, mapUrl, directionsUrl }: EventCardProps) => {
+const EventCard = ({ titlePl, titleEn, lines, maps }: EventCardProps) => {
   const { t } = useLang();
-  const [showMap, setShowMap] = useState(false);
+  const [openMap, setOpenMap] = useState<number | null>(null);
 
   return (
     <div className="reveal-child group">
@@ -37,42 +43,48 @@ const EventCard = ({ titlePl, titleEn, lines, mapUrl, directionsUrl }: EventCard
           </p>
         ))}
 
-        {mapUrl && (
-          <div className="mt-5">
-            <button
-              onClick={() => setShowMap(!showMap)}
-              className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 transition-colors uppercase tracking-wider"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              {showMap ? t("Ukryj mapę", "Hide map") : t("Pokaż mapę", "Show map")}
-            </button>
+        {maps && maps.length > 0 && (
+          <div className="mt-5 space-y-3">
+            {maps.map((map, i) => (
+              <div key={i}>
+                <button
+                  onClick={() => setOpenMap(openMap === i ? null : i)}
+                  className="flex items-center gap-1.5 font-sans text-xs text-wedding-gold hover:text-wedding-gold/80 transition-colors uppercase tracking-wider"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  {openMap === i
+                    ? t("Ukryj mapę", "Hide map")
+                    : t(map.labelPl, map.labelEn)}
+                </button>
 
-            {showMap && (
-              <div className="mt-3 rounded overflow-hidden border border-border/40 animate-fade-up">
-                <iframe
-                  src={mapUrl}
-                  width="100%"
-                  height="200"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={t(titlePl, titleEn)}
-                />
+                {openMap === i && (
+                  <div className="mt-3 rounded overflow-hidden border border-border/40 animate-fade-up">
+                    <iframe
+                      src={map.mapUrl}
+                      width="100%"
+                      height="200"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={t(map.labelPl, map.labelEn)}
+                    />
+                  </div>
+                )}
+
+                {map.directionsUrl && openMap === i && (
+                  <a
+                    href={map.directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-2 font-sans text-[11px] text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+                  >
+                    <MapPin className="w-3 h-3" />
+                    {t("Nawiguj", "Get directions")} →
+                  </a>
+                )}
               </div>
-            )}
-
-            {directionsUrl && (
-              <a
-                href={directionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-2 font-sans text-[11px] text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
-              >
-                <MapPin className="w-3 h-3" />
-                {t("Nawiguj", "Get directions")} →
-              </a>
-            )}
+            ))}
           </div>
         )}
       </div>
