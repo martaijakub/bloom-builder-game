@@ -4,10 +4,11 @@ import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
   unlocked: boolean;
+  menuUnlocked?: boolean;
   onTryUnlock: (section: string) => void;
 }
 
-const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
+const Navbar = ({ unlocked, menuUnlocked, onTryUnlock }: NavbarProps) => {
   const { lang, setLang, t } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -27,6 +28,7 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
   ];
 
   const lockedLinks = [
+    { section: "menu-section", label: t("Menu", "Menu"), open: !!menuUnlocked },
     { section: "tables-section", label: t("Stoły", "Tables") },
     { section: "photo-section", label: t("Foto", "Photos") },
   ];
@@ -68,7 +70,9 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
               </a>
             </li>
           ))}
-          {lockedLinks.map((item) => (
+          {lockedLinks.map((item) => {
+            const isOpen = item.open ?? unlocked;
+            return (
             <li key={item.section}>
               <button
                 onClick={() => {
@@ -76,16 +80,17 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
                   onTryUnlock(item.section);
                 }}
                 className={`block w-full text-left px-6 py-3 md:py-0 text-sm font-sans font-medium tracking-wide transition-colors ${
-                  unlocked
+                  isOpen
                     ? "text-wedding-gold"
                     : "text-muted-foreground"
                 }`}
               >
-                <span className="mr-1 text-xs">{unlocked ? "◆" : "◇"}</span>
+                <span className="mr-1 text-xs">{isOpen ? "◆" : "◇"}</span>
                 {item.label}
               </button>
             </li>
-          ))}
+            );
+          })}
           {/* Mobile language toggle */}
           <li className="md:hidden px-6 py-3 flex items-center gap-2">
             <button

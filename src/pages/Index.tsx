@@ -6,6 +6,7 @@ import Schedule from "@/components/wedding/Schedule";
 import Accommodations from "@/components/wedding/Accommodations";
 import Activities from "@/components/wedding/Activities";
 import LockedSections from "@/components/wedding/LockedSections";
+import WeddingMenu from "@/components/wedding/WeddingMenu";
 import UnlockModal from "@/components/wedding/UnlockModal";
 import Footer from "@/components/wedding/Footer";
 import AdminPanel from "@/components/wedding/AdminPanel";
@@ -13,6 +14,7 @@ import AdminPanel from "@/components/wedding/AdminPanel";
 const IndexContent = () => {
   const {
     unlocked,
+    menuUnlocked,
     isAdmin,
     adminUnlocked,
     previewAsGuest,
@@ -28,12 +30,13 @@ const IndexContent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar unlocked={unlocked} onTryUnlock={tryUnlock} />
+      <Navbar unlocked={unlocked} menuUnlocked={menuUnlocked} onTryUnlock={tryUnlock} />
       <Hero />
       <Schedule />
       <Accommodations />
       <Activities />
-      <LockedSections unlocked={unlocked} isAdmin={isAdmin} />
+      <LockedSections unlocked={unlocked} isAdmin={isAdmin} menuUnlocked={menuUnlocked} />
+      {menuUnlocked && <WeddingMenu />}
       <UnlockModal open={showModal} onClose={() => setShowModal(false)} onSubmit={checkPassword} />
       <Footer onAdminUnlock={adminUnlock} />
       <AdminPanel

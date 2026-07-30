@@ -6,10 +6,17 @@ const UNLOCK_KEY = "wedding_admin_unlocked";
 // Date gate: accessible Aug 3-15, 2026
 const OPEN_DATE = new Date("2026-08-03T00:00:00");
 const CLOSE_DATE = new Date("2026-08-15T23:59:59");
+// Wedding menu opens on the wedding day itself
+const MENU_OPEN_DATE = new Date("2026-08-08T00:00:00");
 
 function isDateUnlocked(): boolean {
   const now = new Date();
   return now >= OPEN_DATE && now <= CLOSE_DATE;
+}
+
+function isMenuDateUnlocked(): boolean {
+  const now = new Date();
+  return now >= MENU_OPEN_DATE && now <= CLOSE_DATE;
 }
 
 export const useUnlock = () => {
@@ -21,8 +28,10 @@ export const useUnlock = () => {
   const [previewAsGuest, setPreviewAsGuest] = useState(false);
 
   const dateUnlocked = isDateUnlocked();
+  const menuDateUnlocked = isMenuDateUnlocked();
   const isAdmin = adminUnlocked && !previewAsGuest;
   const unlocked = previewAsGuest ? dateUnlocked : (dateUnlocked || adminUnlocked);
+  const menuUnlocked = previewAsGuest ? menuDateUnlocked : (menuDateUnlocked || adminUnlocked);
 
   const tryUnlock = useCallback((sectionName: string) => {
     if (unlocked) {
@@ -68,6 +77,7 @@ export const useUnlock = () => {
 
   return {
     unlocked,
+    menuUnlocked,
     isAdmin,
     adminUnlocked,
     previewAsGuest,
