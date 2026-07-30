@@ -1,13 +1,15 @@
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
 
+type Dish = { pl: string; en: string };
+
 type Course = {
   icon: string;
   pl: string;
   en: string;
   notePl?: string;
   noteEn?: string;
-  items: string[];
+  items: Dish[];
 };
 
 const courses: Course[] = [
@@ -18,7 +20,10 @@ const courses: Course[] = [
     notePl: "danie serwowane",
     noteEn: "served to the table",
     items: [
-      "Zupa krem z letnich pomidorów z domowym pesto ze świeżej bazylii z rustykalną grzanką",
+      {
+        pl: "Zupa krem z letnich pomidorów z domowym pesto ze świeżej bazylii z rustykalną grzanką",
+        en: "Cream of summer tomato soup with homemade fresh basil pesto and a rustic crouton",
+      },
     ],
   },
   {
@@ -28,9 +33,18 @@ const courses: Course[] = [
     notePl: "podane wieloporcjowo na półmiskach na stole",
     noteEn: "shared platters on the table",
     items: [
-      "Filet z pstrąga potokowego zapiekany ze szpinakiem w śmietanie i białym winie",
-      "Kacze udka pieczone z morelami podane z czatnejem morelowym",
-      "Pieczeń z karkówki wieprzowej z sosem ze świeżych kurek",
+      {
+        pl: "Filet z pstrąga potokowego zapiekany ze szpinakiem w śmietanie i białym winie",
+        en: "Brook trout fillet baked with spinach in cream and white wine",
+      },
+      {
+        pl: "Kacze udka pieczone z morelami podane z czatnejem morelowym",
+        en: "Roast duck legs with apricots, served with apricot chutney",
+      },
+      {
+        pl: "Pieczeń z karkówki wieprzowej z sosem ze świeżych kurek",
+        en: "Roast pork neck with a fresh chanterelle sauce",
+      },
     ],
   },
   {
@@ -39,17 +53,34 @@ const courses: Course[] = [
     en: "Vegetarian main",
     notePl: "serwowane, tylko dla osób wcześniej deklarujących dietę",
     noteEn: "served, only for guests who declared the diet in advance",
-    items: ["Spaghetti z cukinii z sosem z pieczonych pomidorów z burratą"],
+    items: [
+      {
+        pl: "Spaghetti z cukinii z sosem z pieczonych pomidorów z burratą",
+        en: "Courgette spaghetti with roasted tomato sauce and burrata",
+      },
+    ],
   },
   {
     icon: "🥔",
     pl: "Dodatki do dań głównych",
     en: "Sides",
     items: [
-      "Ćwiartki ziemniaków zapiekane z czosnkiem i ziołami",
-      "Risotto z kaszy pęczak z cebulką",
-      "Fasolka szparagowa ze zrumienioną na maśle bułką tartą",
-      "Zestaw surówek (z młodej kapusty ze słonecznikiem, z buraczków z jabłkiem i cebulką, pikantna z marchewki)",
+      {
+        pl: "Ćwiartki ziemniaków zapiekane z czosnkiem i ziołami",
+        en: "Potato wedges baked with garlic and herbs",
+      },
+      {
+        pl: "Risotto z kaszy pęczak z cebulką",
+        en: "Pearl barley risotto with onion",
+      },
+      {
+        pl: "Fasolka szparagowa ze zrumienioną na maśle bułką tartą",
+        en: "Green beans with butter-toasted breadcrumbs",
+      },
+      {
+        pl: "Zestaw surówek (z młodej kapusty ze słonecznikiem, z buraczków z jabłkiem i cebulką, pikantna z marchewki)",
+        en: "Selection of fresh salads (young cabbage with sunflower seeds, beetroot with apple and onion, spicy carrot)",
+      },
     ],
   },
   {
@@ -59,7 +90,10 @@ const courses: Course[] = [
     notePl: "serwowany",
     noteEn: "served",
     items: [
-      'Własny tort Pary Młodej z zaprzyjaźnionej pracowni „Upiecz mi tort”',
+      {
+        pl: "Własny tort Pary Młodej z zaprzyjaźnionej pracowni „Upiecz mi tort”",
+        en: "The couple's own wedding cake from our friends at the “Upiecz mi tort” bakery",
+      },
     ],
   },
   {
@@ -69,15 +103,39 @@ const courses: Course[] = [
     notePl: "podane na półmiskach na stole",
     noteEn: "shared platters on the table",
     items: [
-      "Ceviche z pstrąga z cebulką, chilli i kolendrą",
-      "Tatar wołowy z wiejskim jajkiem, ogórkiem kiszonym, grzybkami i cebulką",
-      "Opalany bakłażan na czosnkowym jogurcie",
-      "Zestaw past do pieczywa: solone masło ziołowe, domowe pesto pietruszkowe z prażonym słonecznikiem, z suszonych pomidorów",
-      "Grzanki ziołowo-czosnkowe",
-      "Sałatka z grillowanym kurczakiem i owocami sezonowymi",
-      "Sałatka z surowego i pieczonego kalafiora, cytryny i kaparów",
-      "Sałatka z arbuzem, świeżym ogórkiem, fetą i świeżym koperkiem",
-      "Pieczywo naszego wypieku (żytni chleb na zakwasie, focaccia z rozmarynem)",
+      {
+        pl: "Ceviche z pstrąga z cebulką, chilli i kolendrą",
+        en: "Trout ceviche with onion, chilli and coriander",
+      },
+      {
+        pl: "Tatar wołowy z wiejskim jajkiem, ogórkiem kiszonym, grzybkami i cebulką",
+        en: "Beef tartare with farm egg, pickled cucumber, mushrooms and onion",
+      },
+      {
+        pl: "Opalany bakłażan na czosnkowym jogurcie",
+        en: "Flame-roasted aubergine on garlic yoghurt",
+      },
+      {
+        pl: "Zestaw past do pieczywa: solone masło ziołowe, domowe pesto pietruszkowe z prażonym słonecznikiem, z suszonych pomidorów",
+        en: "Selection of bread spreads: salted herb butter, homemade parsley pesto with toasted sunflower seeds, sun-dried tomato",
+      },
+      { pl: "Grzanki ziołowo-czosnkowe", en: "Herb and garlic crostini" },
+      {
+        pl: "Sałatka z grillowanym kurczakiem i owocami sezonowymi",
+        en: "Salad with grilled chicken and seasonal fruit",
+      },
+      {
+        pl: "Sałatka z surowego i pieczonego kalafiora, cytryny i kaparów",
+        en: "Salad of raw and roasted cauliflower with lemon and capers",
+      },
+      {
+        pl: "Sałatka z arbuzem, świeżym ogórkiem, fetą i świeżym koperkiem",
+        en: "Watermelon salad with fresh cucumber, feta and dill",
+      },
+      {
+        pl: "Pieczywo naszego wypieku (żytni chleb na zakwasie, focaccia z rozmarynem)",
+        en: "Our own baked bread (rye sourdough, rosemary focaccia)",
+      },
     ],
   },
   {
@@ -87,7 +145,10 @@ const courses: Course[] = [
     notePl: "bufet po oczepinach",
     noteEn: "buffet after the midnight ceremony",
     items: [
-      "Długo pieczone żeberka wieprzowe podane z sosem miodowo-musztardowym z cydrem",
+      {
+        pl: "Długo pieczone żeberka wieprzowe podane z sosem miodowo-musztardowym z cydrem",
+        en: "Slow-roasted pork ribs with honey-mustard cider sauce",
+      },
     ],
   },
   {
@@ -96,7 +157,14 @@ const courses: Course[] = [
     en: "Coffee buffet",
     notePl: "sala cydrowa",
     noteEn: "cider room",
-    items: ["Brownie z malinami", "Ciasto z owocami sezonowymi i kruszonką", "Tiramisu"],
+    items: [
+      { pl: "Brownie z malinami", en: "Raspberry brownie" },
+      {
+        pl: "Ciasto z owocami sezonowymi i kruszonką",
+        en: "Seasonal fruit crumble cake",
+      },
+      { pl: "Tiramisu", en: "Tiramisu" },
+    ],
   },
   {
     icon: "🍓",
@@ -105,12 +173,15 @@ const courses: Course[] = [
     notePl: "sala cydrowa",
     noteEn: "cider room",
     items: [
-      "Tarta ze świeżymi owocami",
-      "Szarlotka",
-      "Muffiny z jagodami i płatkami migdałów",
-      "Patera owoców sezonowych",
-      "Sangria z owocami",
-      "Lemoniada",
+      { pl: "Tarta ze świeżymi owocami", en: "Fresh fruit tart" },
+      { pl: "Szarlotka", en: "Apple pie" },
+      {
+        pl: "Muffiny z jagodami i płatkami migdałów",
+        en: "Blueberry muffins with almond flakes",
+      },
+      { pl: "Patera owoców sezonowych", en: "Platter of seasonal fruit" },
+      { pl: "Sangria z owocami", en: "Fruit sangria" },
+      { pl: "Lemoniada", en: "Lemonade" },
     ],
   },
   {
@@ -118,21 +189,45 @@ const courses: Course[] = [
     pl: "Wiejski stół",
     en: "Country table",
     items: [
-      "Chłodnik litewski z jajkiem i świeżym koperkiem",
-      "Śledź po kaszubsku w occie z cebulką",
-      "Pstrąg z lokalnej wędzarni",
-      "Podwędzane w naszej wędzarni polędwiczki wieprzowe",
-      "Swojska kiełbasa wędzona z zaprzyjaźnionej wędzarni",
-      "Swojska szynka z zaprzyjaźnionej wędzarni",
-      "Domowa konfitura z żurawiny",
-      "Wybór domowych marynat",
-      "Sos chrzanowy",
-      "Deska serów zagrodowych podana z orzechami, miodem i owocami",
-      "Ogórki małosolne",
-      "Smalec ze skwarkami",
-      "Chleb na zakwasie lokalnego wypieku",
-      "Kompot",
-      "Nalewki owocowe domowej roboty",
+      {
+        pl: "Chłodnik litewski z jajkiem i świeżym koperkiem",
+        en: "Lithuanian cold beetroot soup with egg and fresh dill",
+      },
+      {
+        pl: "Śledź po kaszubsku w occie z cebulką",
+        en: "Kashubian-style herring in vinegar with onion",
+      },
+      { pl: "Pstrąg z lokalnej wędzarni", en: "Trout from a local smokehouse" },
+      {
+        pl: "Podwędzane w naszej wędzarni polędwiczki wieprzowe",
+        en: "Pork tenderloin smoked in our own smokehouse",
+      },
+      {
+        pl: "Swojska kiełbasa wędzona z zaprzyjaźnionej wędzarni",
+        en: "Farmhouse smoked sausage from a local smokehouse",
+      },
+      {
+        pl: "Swojska szynka z zaprzyjaźnionej wędzarni",
+        en: "Farmhouse ham from a local smokehouse",
+      },
+      { pl: "Domowa konfitura z żurawiny", en: "Homemade cranberry preserve" },
+      { pl: "Wybór domowych marynat", en: "Selection of homemade pickles" },
+      { pl: "Sos chrzanowy", en: "Horseradish sauce" },
+      {
+        pl: "Deska serów zagrodowych podana z orzechami, miodem i owocami",
+        en: "Farmhouse cheese board with nuts, honey and fruit",
+      },
+      { pl: "Ogórki małosolne", en: "Lightly salted cucumbers" },
+      { pl: "Smalec ze skwarkami", en: "Lard with crackling" },
+      {
+        pl: "Chleb na zakwasie lokalnego wypieku",
+        en: "Locally baked sourdough bread",
+      },
+      { pl: "Kompot", en: "Fruit compote" },
+      {
+        pl: "Nalewki owocowe domowej roboty",
+        en: "Homemade fruit liqueurs",
+      },
     ],
   },
 ];
@@ -175,10 +270,10 @@ const WeddingMenu = () => {
               <ul className="space-y-3">
                 {course.items.map((item) => (
                   <li
-                    key={item}
+                    key={item.pl}
                     className="font-sans text-sm leading-relaxed text-foreground/90 text-center"
                   >
-                    {item}
+                    {t(item.pl, item.en)}
                   </li>
                 ))}
               </ul>
