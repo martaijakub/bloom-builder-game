@@ -172,10 +172,11 @@ const ChallengeCard = ({
 
 interface LockedSectionsProps {
   unlocked: boolean;
+  menuUnlocked?: boolean;
   isAdmin?: boolean;
 }
 
-const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
+const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps) => {
   const { t } = useLang();
   const { ref: tablesRef, visible: tablesVisible } = useReveal();
   const { ref: photoRef, visible: photoVisible } = useReveal();
@@ -199,7 +200,23 @@ const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+              <div className="text-5xl mb-5">🍽️</div>
+              <h3 className="font-serif text-2xl font-light text-foreground mb-3 tracking-tight">
+                {t("Menu Weselne", "Wedding Menu")}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+                {t(
+                  "Pełne menu weselne — od przystawki po wiejski stół i nocny bufet.",
+                  "The full wedding menu — from the starter to the country table and night buffet."
+                )}
+              </p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+                {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
+              </p>
+            </div>
+
             <div className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
               <div className="text-5xl mb-5">🍽️</div>
               <h3 className="font-serif text-2xl font-light text-foreground mb-3 tracking-tight">
@@ -239,6 +256,26 @@ const LockedSections = ({ unlocked, isAdmin }: LockedSectionsProps) => {
 
   return (
     <>
+      {!menuUnlocked && (
+        <section id="menu-section" className="py-20 px-6 bg-accent/30">
+          <div className="max-w-xl mx-auto border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+            <div className="text-5xl mb-5">🍽️</div>
+            <h3 className="font-serif text-3xl font-light text-foreground mb-3 tracking-tight">
+              {t("Menu Weselne", "Wedding Menu")}
+            </h3>
+            <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+              {t(
+                "Pełne menu weselne odsłonimy w dniu wesela.",
+                "The full wedding menu will be revealed on the wedding day."
+              )}
+            </p>
+            <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+              {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Seating Plan */}
       <section id="tables-section" className="py-28 md:py-36 px-6 bg-accent/30">
         <div ref={tablesRef} className={`max-w-5xl mx-auto reveal ${tablesVisible ? "visible" : ""}`}>
