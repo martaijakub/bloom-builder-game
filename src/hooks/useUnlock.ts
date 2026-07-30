@@ -28,8 +28,10 @@ export const useUnlock = () => {
   const [previewAsGuest, setPreviewAsGuest] = useState(false);
 
   const dateUnlocked = isDateUnlocked();
+  const menuDateUnlocked = isMenuDateUnlocked();
   const isAdmin = adminUnlocked && !previewAsGuest;
   const unlocked = previewAsGuest ? dateUnlocked : (dateUnlocked || adminUnlocked);
+  const menuUnlocked = previewAsGuest ? menuDateUnlocked : (menuDateUnlocked || adminUnlocked);
 
   const tryUnlock = useCallback((sectionName: string) => {
     if (unlocked) {
