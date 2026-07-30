@@ -77,6 +77,7 @@ export const useUnlock = () => {
 
   return {
     unlocked,
+    menuUnlocked,
     isAdmin,
     adminUnlocked,
     previewAsGuest,
