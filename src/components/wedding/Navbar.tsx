@@ -4,10 +4,11 @@ import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
   unlocked: boolean;
+  menuUnlocked?: boolean;
   onTryUnlock: (section: string) => void;
 }
 
-const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
+const Navbar = ({ unlocked, menuUnlocked, onTryUnlock }: NavbarProps) => {
   const { lang, setLang, t } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -27,6 +28,7 @@ const Navbar = ({ unlocked, onTryUnlock }: NavbarProps) => {
   ];
 
   const lockedLinks = [
+    { section: "menu-section", label: t("Menu", "Menu"), open: !!menuUnlocked },
     { section: "tables-section", label: t("Stoły", "Tables") },
     { section: "photo-section", label: t("Foto", "Photos") },
   ];
