@@ -271,30 +271,39 @@ const TableVisual = ({
         {/* Guest seats around the table */}
         {guestsWithPos.map((guest) => {
           const pos = perimeterToXY(guest.perimeterPos, width, height);
+          // Anchor the name pill outward so it never covers the table
+          const side = pos.x < -width / 4 ? "left" : pos.x > width / 4 ? "right" : "center";
+          const translate =
+            side === "left"
+              ? "translate(-100%, -50%)"
+              : side === "right"
+              ? "translate(0, -50%)"
+              : "translate(-50%, -50%)";
           return (
             <div
               key={guest.id}
               className={`absolute flex items-center justify-center ${
-                isAdmin ? "cursor-grab active:cursor-grabbing z-10 hover:z-20" : ""
+                isAdmin ? "cursor-grab active:cursor-grabbing z-10 hover:z-20" : "z-10"
               }`}
               style={{
                 left: `calc(50% + ${pos.x}px)`,
                 top: `calc(50% + ${pos.y}px)`,
-                transform: "translate(-50%, -50%)",
+                transform: translate,
               }}
               onMouseDown={isAdmin ? (e) => handleSeatDragStart(e, guest.id) : undefined}
               title={guest.name}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-card border shadow-sm transition-shadow ${
+              <div className={`px-2 py-1 rounded-full flex items-center justify-center bg-card border shadow-sm transition-shadow whitespace-nowrap max-w-[160px] ${
                 isAdmin ? "border-primary/40 hover:shadow-md hover:border-primary" : "border-wedding-gold/40"
               }`}>
-                <span className="font-serif text-[10px] font-medium text-foreground leading-none">
-                  {getInitials(guest.name)}
+                <span className="font-serif text-[10px] font-medium text-foreground leading-none truncate">
+                  {guest.name}
                 </span>
               </div>
             </div>
           );
         })}
+
       </div>
 
       {/* Admin controls */}
