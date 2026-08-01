@@ -813,11 +813,12 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       {/* Floor plan */}
       <div
         ref={viewportRef}
-        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden touch-none select-none"
+        className={`relative w-full bg-wedding-warm/30 border border-border/40 select-none ${
+          isAdmin ? "overflow-auto" : "overflow-hidden touch-none"
+        }`}
         style={{
-          height: isAdmin ? undefined : "min(70vh, 600px)",
-          aspectRatio: isAdmin ? "16 / 10" : undefined,
-          minHeight: isAdmin ? 400 : 380,
+          height: isAdmin ? "min(80vh, 700px)" : "min(70vh, 560px)",
+          minHeight: 340,
           cursor: !isAdmin ? "grab" : undefined,
         }}
         onWheel={!isAdmin ? handleWheel : undefined}
@@ -826,19 +827,24 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         onTouchEnd={!isAdmin ? handleTouchEnd : undefined}
         onMouseDown={!isAdmin ? handleMouseDownPan : undefined}
       >
-        {/* Pan/zoom transform layer (guest) or static (admin) */}
+        {/* Fixed-size canvas: guests pan/zoom it, admins scroll it */}
         <div
           ref={containerRef}
-          className="absolute inset-0"
-          style={
-            !isAdmin
-              ? {
+          className="relative"
+          style={{
+            width: CANVAS_W,
+            height: CANVAS_H,
+            ...(isAdmin
+              ? {}
+              : {
+                  position: "absolute" as const,
+                  top: 0,
+                  left: 0,
                   transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.scale})`,
                   transformOrigin: "0 0",
                   transition: panStateRef.current || pinchStateRef.current ? "none" : "transform 0.15s ease-out",
-                }
-              : undefined
-          }
+                }),
+          }}
         >
           {/* Dance floor indicator */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
