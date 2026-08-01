@@ -460,9 +460,28 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const panStateRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
   const pinchStateRef = useRef<{ dist: number; scale: number; cx: number; cy: number; tx: number; ty: number } | null>(null);
 
-  const clampScale = (s: number) => Math.max(0.4, Math.min(3, s));
+  const clampScale = (s: number) => Math.max(0.15, Math.min(3, s));
 
-  const resetView = useCallback(() => setView({ scale: 1, tx: 0, ty: 0 }), []);
+  // Fit the whole fixed-size canvas into the viewport (mobile-friendly).
+  const resetView = useCallback(() => {
+    const rect = viewportRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return setView({ scale: 1, tx: 0, ty: 0 });
+    const scale = clampScale(Math.min(rect.width / CANVAS_W, rect.height / CANVAS_H));
+    setView({
+      scale,
+      tx: (rect.width - CANVAS_W * scale) / 2,
+      ty: (rect.height - CANVAS_H * scale) / 2,
+    });
+  }, []);
+
+  // Fit on mount / resize (guest view)
+  useEffect(() => {
+    if (isAdmin) return;
+    resetView();
+    const onResize = () => resetView();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [isAdmin, resetView]);
 
   const zoomAt = useCallback((factor: number, cx?: number, cy?: number) => {
     setView((v) => {
