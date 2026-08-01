@@ -29,7 +29,7 @@ const Navbar = ({ unlocked, menuUnlocked, onTryUnlock }: NavbarProps) => {
 
   const lockedLinks = [
     { section: "menu-section", label: t("Menu", "Menu"), open: !!menuUnlocked },
-    { section: "tables-section", label: t("Stoły", "Tables") },
+    { section: "tables-section", label: t("Stoły", "Tables"), open: !!menuUnlocked },
     { section: "photo-section", label: t("Foto", "Photos") },
   ];
 

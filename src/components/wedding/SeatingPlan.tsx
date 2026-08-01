@@ -25,6 +25,9 @@ interface TableData {
 const STORAGE_KEY = "wedding_seating_plan_admin";
 const ADMIN_PASS = "ADMIN2026";
 const MAX_TABLES = 5;
+// Fixed virtual canvas so table positions never squeeze/overlap on small screens.
+const CANVAS_W = 1040;
+const CANVAS_H = 660;
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -460,9 +463,28 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
   const panStateRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
   const pinchStateRef = useRef<{ dist: number; scale: number; cx: number; cy: number; tx: number; ty: number } | null>(null);
 
-  const clampScale = (s: number) => Math.max(0.4, Math.min(3, s));
+  const clampScale = (s: number) => Math.max(0.15, Math.min(3, s));
 
-  const resetView = useCallback(() => setView({ scale: 1, tx: 0, ty: 0 }), []);
+  // Fit the whole fixed-size canvas into the viewport (mobile-friendly).
+  const resetView = useCallback(() => {
+    const rect = viewportRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return setView({ scale: 1, tx: 0, ty: 0 });
+    const scale = clampScale(Math.min(rect.width / CANVAS_W, rect.height / CANVAS_H));
+    setView({
+      scale,
+      tx: (rect.width - CANVAS_W * scale) / 2,
+      ty: (rect.height - CANVAS_H * scale) / 2,
+    });
+  }, []);
+
+  // Fit on mount / resize (guest view)
+  useEffect(() => {
+    if (isAdmin) return;
+    resetView();
+    const onResize = () => resetView();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [isAdmin, resetView]);
 
   const zoomAt = useCallback((factor: number, cx?: number, cy?: number) => {
     setView((v) => {
@@ -791,11 +813,12 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
       {/* Floor plan */}
       <div
         ref={viewportRef}
-        className="relative w-full bg-wedding-warm/30 border border-border/40 overflow-hidden touch-none select-none"
+        className={`relative w-full bg-wedding-warm/30 border border-border/40 select-none ${
+          isAdmin ? "overflow-auto" : "overflow-hidden touch-none"
+        }`}
         style={{
-          height: isAdmin ? undefined : "min(70vh, 600px)",
-          aspectRatio: isAdmin ? "16 / 10" : undefined,
-          minHeight: isAdmin ? 400 : 380,
+          height: isAdmin ? "min(80vh, 700px)" : "min(70vh, 560px)",
+          minHeight: 340,
           cursor: !isAdmin ? "grab" : undefined,
         }}
         onWheel={!isAdmin ? handleWheel : undefined}
@@ -804,19 +827,24 @@ const SeatingPlan = ({ isAdmin: isAdminProp }: { isAdmin?: boolean }) => {
         onTouchEnd={!isAdmin ? handleTouchEnd : undefined}
         onMouseDown={!isAdmin ? handleMouseDownPan : undefined}
       >
-        {/* Pan/zoom transform layer (guest) or static (admin) */}
+        {/* Fixed-size canvas: guests pan/zoom it, admins scroll it */}
         <div
           ref={containerRef}
-          className="absolute inset-0"
-          style={
-            !isAdmin
-              ? {
+          className="relative"
+          style={{
+            width: CANVAS_W,
+            height: CANVAS_H,
+            ...(isAdmin
+              ? {}
+              : {
+                  position: "absolute" as const,
+                  top: 0,
+                  left: 0,
                   transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.scale})`,
                   transformOrigin: "0 0",
                   transition: panStateRef.current || pinchStateRef.current ? "none" : "transform 0.15s ease-out",
-                }
-              : undefined
-          }
+                }),
+          }}
         >
           {/* Dance floor indicator */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
