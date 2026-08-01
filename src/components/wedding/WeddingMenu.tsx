@@ -15,8 +15,8 @@ type Course = {
 const courses: Course[] = [
   {
     icon: "🍅",
-    pl: "Przystawka",
-    en: "Starter",
+    pl: "Pierwsze Danie",
+    en: "First Course",
     notePl: "danie serwowane",
     noteEn: "served to the table",
     items: [
