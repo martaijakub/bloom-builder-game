@@ -25,6 +25,9 @@ interface TableData {
 const STORAGE_KEY = "wedding_seating_plan_admin";
 const ADMIN_PASS = "ADMIN2026";
 const MAX_TABLES = 5;
+// Fixed virtual canvas so table positions never squeeze/overlap on small screens.
+const CANVAS_W = 1040;
+const CANVAS_H = 660;
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
