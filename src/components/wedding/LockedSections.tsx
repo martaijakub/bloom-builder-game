@@ -258,25 +258,44 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
     <>
       {!menuUnlocked && (
         <section id="menu-section" className="py-20 px-6 bg-accent/30">
-          <div className="max-w-xl mx-auto border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
-            <div className="text-5xl mb-5">🍽️</div>
-            <h3 className="font-serif text-3xl font-light text-foreground mb-3 tracking-tight">
-              {t("Menu Weselne", "Wedding Menu")}
-            </h3>
-            <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
-              {t(
-                "Pełne menu weselne odsłonimy w dniu wesela.",
-                "The full wedding menu will be revealed on the wedding day."
-              )}
-            </p>
-            <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
-              {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
-            </p>
+          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+              <div className="text-5xl mb-5">🍽️</div>
+              <h3 className="font-serif text-3xl font-light text-foreground mb-3 tracking-tight">
+                {t("Menu Weselne", "Wedding Menu")}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+                {t(
+                  "Pełne menu weselne odsłonimy w dniu wesela.",
+                  "The full wedding menu will be revealed on the wedding day."
+                )}
+              </p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+                {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
+              </p>
+            </div>
+
+            <div id="tables-section" className="border border-wedding-gold/40 bg-card/60 backdrop-blur-sm p-10 text-center">
+              <div className="text-5xl mb-5">🪑</div>
+              <h3 className="font-serif text-3xl font-light text-foreground mb-3 tracking-tight">
+                {t("Układ Stołów", "Seating Plan")}
+              </h3>
+              <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">
+                {t(
+                  "Układ sali i miejsca przy stołach pokażemy w dniu wesela.",
+                  "The floor plan and seat assignments will be shown on the wedding day."
+                )}
+              </p>
+              <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
+                {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
+              </p>
+            </div>
           </div>
         </section>
       )}
 
       {/* Seating Plan */}
+      {menuUnlocked && (
       <section id="tables-section" className="py-28 md:py-36 px-6 bg-accent/30">
         <div ref={tablesRef} className={`max-w-5xl mx-auto reveal ${tablesVisible ? "visible" : ""}`}>
           <div className="text-center mb-14">
@@ -294,6 +313,7 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
           <SeatingPlan isAdmin={isAdmin} />
         </div>
       </section>
+      )}
 
       {/* Photo Challenge */}
       <section id="photo-section" className="py-28 md:py-36 px-6">
