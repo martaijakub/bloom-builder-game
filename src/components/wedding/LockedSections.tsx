@@ -229,7 +229,7 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
                 )}
               </p>
               <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-wedding-gold">
-                {t("Dostępne od 3.08.2026", "Available from 3 Aug 2026")}
+                {t("Dostępne od 8.08.2026", "Available from 8 Aug 2026")}
               </p>
             </div>
 
