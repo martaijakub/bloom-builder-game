@@ -28,7 +28,7 @@ const challenges = [
 const CLOUDINARY_CLOUD_NAME = "dyz8kvmfn";
 const CLOUDINARY_UPLOAD_PRESET = "wedding_photos";
 
-function openCloudinaryWidget(challengeTag: string, onDone?: () => void) {
+function openCloudinaryWidget(challengeTag: string, onDone?: () => void, uploader?: string) {
   if (!window.cloudinary) {
     alert("Cloudinary widget not loaded yet. Please try again.");
     return;
@@ -43,6 +43,7 @@ function openCloudinaryWidget(challengeTag: string, onDone?: () => void) {
       maxFiles: 50,
       folder: "wedding_guests_uploads",
       tags: [challengeTag],
+      context: uploader ? { uploaded_by: uploader } : undefined,
       clientAllowedFormats: ["image"],
       styles: {
         palette: {
@@ -93,9 +94,11 @@ function shareViaInstagram(challengeName: string) {
 const ChallengeCard = ({
   challenge,
   index,
+  onRequestUpload,
 }: {
   challenge: (typeof challenges)[0];
   index: number;
+  onRequestUpload: (tag: string, onDone: () => void) => void;
 }) => {
   const { t } = useLang();
   const [showActions, setShowActions] = useState(false);
@@ -104,9 +107,9 @@ const ChallengeCard = ({
   const tag = challenge.en.toLowerCase().replace(/[^a-z0-9]/g, "_");
 
   const handleUpload = useCallback(() => {
-    openCloudinaryWidget(tag, () => setUploaded(true));
+    onRequestUpload(tag, () => setUploaded(true));
     setShowActions(false);
-  }, [tag]);
+  }, [tag, onRequestUpload]);
 
   return (
     <div className="reveal-child relative">
