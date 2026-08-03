@@ -206,6 +206,16 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
     setPendingUpload(null);
   }, []);
 
+  // Resume the upload the guest attempted before signing in
+  useEffect(() => {
+    if (session && pendingUpload) {
+      const { tag, onDone } = pendingUpload;
+      setPendingUpload(null);
+      setAuthOpen(false);
+      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+    }
+  }, [session, pendingUpload]);
+
   if (!unlocked) {
     return (
       <section id="coming-soon" className="py-28 md:py-36 px-6 bg-accent/30">
