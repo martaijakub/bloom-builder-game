@@ -185,6 +185,26 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
   const { t } = useLang();
   const { ref: tablesRef, visible: tablesVisible } = useReveal();
   const { ref: photoRef, visible: photoVisible } = useReveal();
+  const { session, signedIn, signOut } = useGuestAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [pendingUpload, setPendingUpload] = useState<{ tag: string; onDone?: () => void } | null>(null);
+
+  const requestUpload = useCallback(
+    (tag: string, onDone?: () => void) => {
+      if (!session) {
+        setPendingUpload({ tag, onDone });
+        setAuthOpen(true);
+        return;
+      }
+      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+    },
+    [session]
+  );
+
+  const handleAuthClose = useCallback(() => {
+    setAuthOpen(false);
+    setPendingUpload(null);
+  }, []);
 
   if (!unlocked) {
     return (
