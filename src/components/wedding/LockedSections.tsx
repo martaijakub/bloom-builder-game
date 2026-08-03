@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
