@@ -358,25 +358,65 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
             </p>
           </div>
 
+          <div className="reveal-child mb-8 border border-border/60 bg-card/50 p-4 flex flex-wrap items-center justify-center gap-3 text-center">
+            <ShieldCheck className="w-4 h-4 text-wedding-gold" />
+            {signedIn ? (
+              <>
+                <p className="font-sans text-xs text-muted-foreground">
+                  {t("Zalogowano jako", "Signed in as")}{" "}
+                  <span className="text-foreground">{session?.user.email}</span>
+                </p>
+                <button
+                  onClick={signOut}
+                  className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  {t("Wyloguj", "Sign out")}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="font-sans text-xs text-muted-foreground">
+                  {t(
+                    "Wysyłanie zdjęć wymaga zalogowania — chronimy galerię przed spamem.",
+                    "Uploading photos requires signing in — we keep the gallery spam-free."
+                  )}
+                </p>
+                <button
+                  onClick={() => setAuthOpen(true)}
+                  className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
+                >
+                  {t("Zaloguj się", "Sign in")}
+                </button>
+              </>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {challenges.map((c, i) => (
-              <ChallengeCard key={i} challenge={c} index={i} />
+              <ChallengeCard key={i} challenge={c} index={i} onRequestUpload={requestUpload} />
             ))}
           </div>
 
           {/* Global upload button */}
           <div className="reveal-child mt-10 text-center">
             <button
-              onClick={() => openCloudinaryWidget("general")}
+              onClick={() => requestUpload("general")}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 font-sans text-xs uppercase tracking-[0.2em] transition-colors hover:bg-primary/90"
             >
               <Upload className="w-4 h-4" />
-              {t("Wyślij zdjęcia tutaj", "Upload photos here")}
+              {signedIn
+                ? t("Wyślij zdjęcia tutaj", "Upload photos here")
+                : t("Zaloguj się i wyślij zdjęcia", "Sign in & upload photos")}
             </button>
             <p className="font-sans text-[10px] text-muted-foreground mt-2">
-              {t("Bez logowania i instalowania aplikacji", "No login or app required")}
+              {t(
+                "Logowanie e-mailem lub kontem Google — bez instalowania aplikacji",
+                "Sign in with email or Google — no app to install"
+              )}
             </p>
           </div>
+
 
           <div className="reveal-child mt-8 border border-border/60 bg-card/50 p-6 text-center">
             <p className="font-sans text-xs uppercase tracking-wider text-muted-foreground mb-2">
