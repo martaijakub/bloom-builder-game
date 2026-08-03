@@ -1,9 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
-import { Calendar, Upload, Share2, X } from "lucide-react";
+import { useGuestAuth } from "@/hooks/useGuestAuth";
+import { Calendar, Upload, Share2, X, ShieldCheck, LogOut } from "lucide-react";
 import SeatingPlan from "./SeatingPlan";
 import PhotoGallery from "./PhotoGallery";
+import GuestAuthModal from "./GuestAuthModal";
 
 declare global {
   interface Window {
@@ -26,7 +28,7 @@ const challenges = [
 const CLOUDINARY_CLOUD_NAME = "dyz8kvmfn";
 const CLOUDINARY_UPLOAD_PRESET = "wedding_photos";
 
-function openCloudinaryWidget(challengeTag: string, onDone?: () => void) {
+function openCloudinaryWidget(challengeTag: string, onDone?: () => void, uploader?: string) {
   if (!window.cloudinary) {
     alert("Cloudinary widget not loaded yet. Please try again.");
     return;
@@ -41,6 +43,7 @@ function openCloudinaryWidget(challengeTag: string, onDone?: () => void) {
       maxFiles: 50,
       folder: "wedding_guests_uploads",
       tags: [challengeTag],
+      context: uploader ? { uploaded_by: uploader } : undefined,
       clientAllowedFormats: ["image"],
       styles: {
         palette: {
@@ -91,9 +94,11 @@ function shareViaInstagram(challengeName: string) {
 const ChallengeCard = ({
   challenge,
   index,
+  onRequestUpload,
 }: {
   challenge: (typeof challenges)[0];
   index: number;
+  onRequestUpload: (tag: string, onDone: () => void) => void;
 }) => {
   const { t } = useLang();
   const [showActions, setShowActions] = useState(false);
@@ -102,9 +107,9 @@ const ChallengeCard = ({
   const tag = challenge.en.toLowerCase().replace(/[^a-z0-9]/g, "_");
 
   const handleUpload = useCallback(() => {
-    openCloudinaryWidget(tag, () => setUploaded(true));
+    onRequestUpload(tag, () => setUploaded(true));
     setShowActions(false);
-  }, [tag]);
+  }, [tag, onRequestUpload]);
 
   return (
     <div className="reveal-child relative">
@@ -180,6 +185,36 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
   const { t } = useLang();
   const { ref: tablesRef, visible: tablesVisible } = useReveal();
   const { ref: photoRef, visible: photoVisible } = useReveal();
+  const { session, signedIn, signOut } = useGuestAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [pendingUpload, setPendingUpload] = useState<{ tag: string; onDone?: () => void } | null>(null);
+
+  const requestUpload = useCallback(
+    (tag: string, onDone?: () => void) => {
+      if (!session) {
+        setPendingUpload({ tag, onDone });
+        setAuthOpen(true);
+        return;
+      }
+      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+    },
+    [session]
+  );
+
+  const handleAuthClose = useCallback(() => {
+    setAuthOpen(false);
+    setPendingUpload(null);
+  }, []);
+
+  // Resume the upload the guest attempted before signing in
+  useEffect(() => {
+    if (session && pendingUpload) {
+      const { tag, onDone } = pendingUpload;
+      setPendingUpload(null);
+      setAuthOpen(false);
+      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+    }
+  }, [session, pendingUpload]);
 
   if (!unlocked) {
     return (
@@ -333,25 +368,65 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
             </p>
           </div>
 
+          <div className="reveal-child mb-8 border border-border/60 bg-card/50 p-4 flex flex-wrap items-center justify-center gap-3 text-center">
+            <ShieldCheck className="w-4 h-4 text-wedding-gold" />
+            {signedIn ? (
+              <>
+                <p className="font-sans text-xs text-muted-foreground">
+                  {t("Zalogowano jako", "Signed in as")}{" "}
+                  <span className="text-foreground">{session?.user.email}</span>
+                </p>
+                <button
+                  onClick={signOut}
+                  className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  {t("Wyloguj", "Sign out")}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="font-sans text-xs text-muted-foreground">
+                  {t(
+                    "Wysyłanie zdjęć wymaga zalogowania — chronimy galerię przed spamem.",
+                    "Uploading photos requires signing in — we keep the gallery spam-free."
+                  )}
+                </p>
+                <button
+                  onClick={() => setAuthOpen(true)}
+                  className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
+                >
+                  {t("Zaloguj się", "Sign in")}
+                </button>
+              </>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {challenges.map((c, i) => (
-              <ChallengeCard key={i} challenge={c} index={i} />
+              <ChallengeCard key={i} challenge={c} index={i} onRequestUpload={requestUpload} />
             ))}
           </div>
 
           {/* Global upload button */}
           <div className="reveal-child mt-10 text-center">
             <button
-              onClick={() => openCloudinaryWidget("general")}
+              onClick={() => requestUpload("general")}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 font-sans text-xs uppercase tracking-[0.2em] transition-colors hover:bg-primary/90"
             >
               <Upload className="w-4 h-4" />
-              {t("Wyślij zdjęcia tutaj", "Upload photos here")}
+              {signedIn
+                ? t("Wyślij zdjęcia tutaj", "Upload photos here")
+                : t("Zaloguj się i wyślij zdjęcia", "Sign in & upload photos")}
             </button>
             <p className="font-sans text-[10px] text-muted-foreground mt-2">
-              {t("Bez logowania i instalowania aplikacji", "No login or app required")}
+              {t(
+                "Logowanie e-mailem lub kontem Google — bez instalowania aplikacji",
+                "Sign in with email or Google — no app to install"
+              )}
             </p>
           </div>
+
 
           <div className="reveal-child mt-8 border border-border/60 bg-card/50 p-6 text-center">
             <p className="font-sans text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -366,7 +441,10 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
           <PhotoGallery />
         </div>
       </section>
+
+      <GuestAuthModal open={authOpen} onClose={handleAuthClose} />
     </>
+
   );
 };
 
