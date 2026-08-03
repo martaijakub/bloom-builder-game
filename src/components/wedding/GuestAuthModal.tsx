@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { supabase } from "@/integrations/supabase/client";
-import { createLovableAuth } from "@lovable.dev/cloud-auth-js";
+import { lovable } from "@/integrations/lovable";
 import { X, Mail, Lock, ShieldCheck } from "lucide-react";
 
 interface GuestAuthModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-const lovableAuth = createLovableAuth();
 
 const GuestAuthModal = ({ open, onClose }: GuestAuthModalProps) => {
   const { t } = useLang();
@@ -63,19 +61,12 @@ const GuestAuthModal = ({ open, onClose }: GuestAuthModalProps) => {
     setBusy(true);
     setError(null);
     try {
-      const result = await lovableAuth.signInWithOAuth("google", {
+      const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
       if (result.error) throw result.error;
       if (result.redirected) return;
-      if (result.tokens) {
-        const { error } = await supabase.auth.setSession({
-          access_token: result.tokens.access_token,
-          refresh_token: result.tokens.refresh_token,
-        });
-        if (error) throw error;
-        onClose();
-      }
+      onClose();
     } catch (e: any) {
       setError(e?.message || t("Logowanie Google nie powiodło się.", "Google sign-in failed."));
     } finally {
