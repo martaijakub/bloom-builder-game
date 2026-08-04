@@ -61,6 +61,8 @@ const LightboxOverlay = ({
   onNext: () => void;
   onPrev: () => void;
 }) => {
+  const { t } = useLang();
+
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchDelta = useRef(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
