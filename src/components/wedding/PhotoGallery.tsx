@@ -26,6 +26,15 @@ interface CloudinaryResource {
   height: number;
   created_at: string;
   tags?: string[];
+  context?: { custom?: Record<string, string> } & Record<string, any>;
+}
+
+function getUploader(photo: CloudinaryResource): string | null {
+  const ctx: any = photo.context;
+  const raw = ctx?.custom?.uploaded_by ?? ctx?.uploaded_by ?? null;
+  if (!raw || typeof raw !== "string") return null;
+  const name = raw.includes("@") ? raw.split("@")[0] : raw;
+  return name.replace(/[._-]+/g, " ").trim();
 }
 
 function getImageUrl(publicId: string, transform = "c_fill,w_400,h_400,q_auto,f_auto") {
@@ -35,6 +44,7 @@ function getImageUrl(publicId: string, transform = "c_fill,w_400,h_400,q_auto,f_
 function getFullUrl(publicId: string) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${publicId}`;
 }
+
 
 const SWIPE_THRESHOLD = 50;
 
