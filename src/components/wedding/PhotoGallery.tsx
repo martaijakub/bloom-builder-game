@@ -128,9 +128,15 @@ const LightboxOverlay = ({
         draggable={false}
       />
 
-      <div className="absolute bottom-4 text-white/60 font-sans text-xs">
-        {index + 1} / {photos.length}
+      <div className="absolute bottom-4 flex flex-col items-center gap-1 text-white/60 font-sans text-xs">
+        {getUploader(photos[index]) && (
+          <span className="text-white/80">
+            {t("Dodał(a)", "Uploaded by")}: {getUploader(photos[index])}
+          </span>
+        )}
+        <span>{index + 1} / {photos.length}</span>
       </div>
+
     </div>
   );
 };
