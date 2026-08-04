@@ -26,6 +26,15 @@ interface CloudinaryResource {
   height: number;
   created_at: string;
   tags?: string[];
+  context?: { custom?: Record<string, string> } & Record<string, any>;
+}
+
+function getUploader(photo: CloudinaryResource): string | null {
+  const ctx: any = photo.context;
+  const raw = ctx?.custom?.uploaded_by ?? ctx?.uploaded_by ?? null;
+  if (!raw || typeof raw !== "string") return null;
+  const name = raw.includes("@") ? raw.split("@")[0] : raw;
+  return name.replace(/[._-]+/g, " ").trim();
 }
 
 function getImageUrl(publicId: string, transform = "c_fill,w_400,h_400,q_auto,f_auto") {
@@ -35,6 +44,7 @@ function getImageUrl(publicId: string, transform = "c_fill,w_400,h_400,q_auto,f_
 function getFullUrl(publicId: string) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${publicId}`;
 }
+
 
 const SWIPE_THRESHOLD = 50;
 
@@ -51,6 +61,8 @@ const LightboxOverlay = ({
   onNext: () => void;
   onPrev: () => void;
 }) => {
+  const { t } = useLang();
+
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchDelta = useRef(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -118,9 +130,15 @@ const LightboxOverlay = ({
         draggable={false}
       />
 
-      <div className="absolute bottom-4 text-white/60 font-sans text-xs">
-        {index + 1} / {photos.length}
+      <div className="absolute bottom-4 flex flex-col items-center gap-1 text-white/60 font-sans text-xs">
+        {getUploader(photos[index]) && (
+          <span className="text-white/80">
+            {t("Dodał(a)", "Uploaded by")}: {getUploader(photos[index])}
+          </span>
+        )}
+        <span>{index + 1} / {photos.length}</span>
       </div>
+
     </div>
   );
 };
@@ -324,16 +342,24 @@ const PhotoGallery = () => {
                 <button
                   key={photo.public_id}
                   onClick={() => openLightbox(i)}
-                  className="aspect-square overflow-hidden border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                  className="text-left border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
                 >
-                  <img
-                    src={getImageUrl(photo.public_id)}
-                    alt={`Guest photo ${i + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={getImageUrl(photo.public_id)}
+                      alt={`Guest photo ${i + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                  {getUploader(photo) && (
+                    <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
+                      {getUploader(photo)}
+                    </p>
+                  )}
                 </button>
               ))}
+
             </div>
           )}
         </>
