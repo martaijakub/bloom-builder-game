@@ -342,16 +342,24 @@ const PhotoGallery = () => {
                 <button
                   key={photo.public_id}
                   onClick={() => openLightbox(i)}
-                  className="aspect-square overflow-hidden border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                  className="text-left border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
                 >
-                  <img
-                    src={getImageUrl(photo.public_id)}
-                    alt={`Guest photo ${i + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={getImageUrl(photo.public_id)}
+                      alt={`Guest photo ${i + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                  {getUploader(photo) && (
+                    <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
+                      {getUploader(photo)}
+                    </p>
+                  )}
                 </button>
               ))}
+
             </div>
           )}
         </>
