@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
-import { useGuestAuth } from "@/hooks/useGuestAuth";
-import { Calendar, Upload, Share2, X, ShieldCheck, LogOut } from "lucide-react";
+import { Calendar, Upload, Share2, X, ShieldCheck } from "lucide-react";
 import SeatingPlan from "./SeatingPlan";
 import PhotoGallery from "./PhotoGallery";
-import GuestAuthModal from "./GuestAuthModal";
+
 
 declare global {
   interface Window {
@@ -181,40 +180,42 @@ interface LockedSectionsProps {
   isAdmin?: boolean;
 }
 
+const AUTHOR_KEY = "wedding_photo_author";
+
 const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps) => {
   const { t } = useLang();
   const { ref: tablesRef, visible: tablesVisible } = useReveal();
   const { ref: photoRef, visible: photoVisible } = useReveal();
-  const { session, signedIn, signOut } = useGuestAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [pendingUpload, setPendingUpload] = useState<{ tag: string; onDone?: () => void } | null>(null);
+  const [authorName, setAuthorName] = useState<string>(
+    () => (typeof window !== "undefined" && localStorage.getItem(AUTHOR_KEY)) || ""
+  );
+
+  const askName = useCallback(() => {
+    const input = window.prompt(
+      t("Jak się podpisać pod zdjęciami?", "How should we sign your photos?"),
+      authorName
+    );
+    if (input === null) return null;
+    const name = input.trim();
+    setAuthorName(name);
+    if (name) localStorage.setItem(AUTHOR_KEY, name);
+    else localStorage.removeItem(AUTHOR_KEY);
+    return name;
+  }, [authorName, t]);
 
   const requestUpload = useCallback(
     (tag: string, onDone?: () => void) => {
-      if (!session) {
-        setPendingUpload({ tag, onDone });
-        setAuthOpen(true);
-        return;
+      let name = authorName;
+      if (!name) {
+        const entered = askName();
+        if (entered === null) return;
+        name = entered;
       }
-      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+      openCloudinaryWidget(tag, onDone, name || undefined);
     },
-    [session]
+    [authorName, askName]
   );
 
-  const handleAuthClose = useCallback(() => {
-    setAuthOpen(false);
-    setPendingUpload(null);
-  }, []);
-
-  // Resume the upload the guest attempted before signing in
-  useEffect(() => {
-    if (session && pendingUpload) {
-      const { tag, onDone } = pendingUpload;
-      setPendingUpload(null);
-      setAuthOpen(false);
-      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
-    }
-  }, [session, pendingUpload]);
 
   if (!unlocked) {
     return (
@@ -370,37 +371,20 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
 
           <div className="reveal-child mb-8 border border-border/60 bg-card/50 p-4 flex flex-wrap items-center justify-center gap-3 text-center">
             <ShieldCheck className="w-4 h-4 text-wedding-gold" />
-            {signedIn ? (
-              <>
-                <p className="font-sans text-xs text-muted-foreground">
-                  {t("Zalogowano jako", "Signed in as")}{" "}
-                  <span className="text-foreground">{session?.user.email}</span>
-                </p>
-                <button
-                  onClick={signOut}
-                  className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t("Wyloguj", "Sign out")}
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="font-sans text-xs text-muted-foreground">
-                  {t(
-                    "Wysyłanie zdjęć wymaga zalogowania — chronimy galerię przed spamem.",
-                    "Uploading photos requires signing in — we keep the gallery spam-free."
-                  )}
-                </p>
-                <button
-                  onClick={() => setAuthOpen(true)}
-                  className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
-                >
-                  {t("Zaloguj się", "Sign in")}
-                </button>
-              </>
-            )}
+            <p className="font-sans text-xs text-muted-foreground">
+              {t("Podpisujesz zdjęcia jako", "You sign photos as")}{" "}
+              <span className="text-foreground">
+                {authorName || t("(anonimowo)", "(anonymous)")}
+              </span>
+            </p>
+            <button
+              onClick={askName}
+              className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
+            >
+              {authorName ? t("Zmień imię", "Change name") : t("Podaj imię", "Set name")}
+            </button>
           </div>
+
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {challenges.map((c, i) => (
@@ -415,16 +399,15 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 font-sans text-xs uppercase tracking-[0.2em] transition-colors hover:bg-primary/90"
             >
               <Upload className="w-4 h-4" />
-              {signedIn
-                ? t("Wyślij zdjęcia tutaj", "Upload photos here")
-                : t("Zaloguj się i wyślij zdjęcia", "Sign in & upload photos")}
+              {t("Wyślij zdjęcia tutaj", "Upload photos here")}
             </button>
             <p className="font-sans text-[10px] text-muted-foreground mt-2">
               {t(
-                "Logowanie e-mailem lub kontem Google — bez instalowania aplikacji",
-                "Sign in with email or Google — no app to install"
+                "Bez logowania — wystarczy podpisać się imieniem",
+                "No sign-in needed — just add your name"
               )}
             </p>
+
           </div>
 
 
@@ -441,9 +424,8 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
           <PhotoGallery />
         </div>
       </section>
-
-      <GuestAuthModal open={authOpen} onClose={handleAuthClose} />
     </>
+
 
   );
 };
