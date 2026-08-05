@@ -181,40 +181,42 @@ interface LockedSectionsProps {
   isAdmin?: boolean;
 }
 
+const AUTHOR_KEY = "wedding_photo_author";
+
 const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps) => {
   const { t } = useLang();
   const { ref: tablesRef, visible: tablesVisible } = useReveal();
   const { ref: photoRef, visible: photoVisible } = useReveal();
-  const { session, signedIn, signOut } = useGuestAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [pendingUpload, setPendingUpload] = useState<{ tag: string; onDone?: () => void } | null>(null);
+  const [authorName, setAuthorName] = useState<string>(
+    () => (typeof window !== "undefined" && localStorage.getItem(AUTHOR_KEY)) || ""
+  );
+
+  const askName = useCallback(() => {
+    const input = window.prompt(
+      t("Jak się podpisać pod zdjęciami?", "How should we sign your photos?"),
+      authorName
+    );
+    if (input === null) return null;
+    const name = input.trim();
+    setAuthorName(name);
+    if (name) localStorage.setItem(AUTHOR_KEY, name);
+    else localStorage.removeItem(AUTHOR_KEY);
+    return name;
+  }, [authorName, t]);
 
   const requestUpload = useCallback(
     (tag: string, onDone?: () => void) => {
-      if (!session) {
-        setPendingUpload({ tag, onDone });
-        setAuthOpen(true);
-        return;
+      let name = authorName;
+      if (!name) {
+        const entered = askName();
+        if (entered === null) return;
+        name = entered;
       }
-      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
+      openCloudinaryWidget(tag, onDone, name || undefined);
     },
-    [session]
+    [authorName, askName]
   );
 
-  const handleAuthClose = useCallback(() => {
-    setAuthOpen(false);
-    setPendingUpload(null);
-  }, []);
-
-  // Resume the upload the guest attempted before signing in
-  useEffect(() => {
-    if (session && pendingUpload) {
-      const { tag, onDone } = pendingUpload;
-      setPendingUpload(null);
-      setAuthOpen(false);
-      openCloudinaryWidget(tag, onDone, session.user.email || session.user.id);
-    }
-  }, [session, pendingUpload]);
 
   if (!unlocked) {
     return (
