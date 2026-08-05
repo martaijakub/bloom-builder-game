@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
-import { useGuestAuth } from "@/hooks/useGuestAuth";
-import { Calendar, Upload, Share2, X, ShieldCheck, LogOut } from "lucide-react";
+import { Calendar, Upload, Share2, X, ShieldCheck } from "lucide-react";
 import SeatingPlan from "./SeatingPlan";
 import PhotoGallery from "./PhotoGallery";
-import GuestAuthModal from "./GuestAuthModal";
+
 
 declare global {
   interface Window {
