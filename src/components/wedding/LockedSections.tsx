@@ -400,16 +400,15 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 font-sans text-xs uppercase tracking-[0.2em] transition-colors hover:bg-primary/90"
             >
               <Upload className="w-4 h-4" />
-              {signedIn
-                ? t("Wyślij zdjęcia tutaj", "Upload photos here")
-                : t("Zaloguj się i wyślij zdjęcia", "Sign in & upload photos")}
+              {t("Wyślij zdjęcia tutaj", "Upload photos here")}
             </button>
             <p className="font-sans text-[10px] text-muted-foreground mt-2">
               {t(
-                "Logowanie e-mailem lub kontem Google — bez instalowania aplikacji",
-                "Sign in with email or Google — no app to install"
+                "Bez logowania — wystarczy podpisać się imieniem",
+                "No sign-in needed — just add your name"
               )}
             </p>
+
           </div>
 
 
