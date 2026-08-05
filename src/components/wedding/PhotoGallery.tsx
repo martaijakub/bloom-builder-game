@@ -157,7 +157,7 @@ const LightboxOverlay = ({
   );
 };
 
-const PhotoGallery = () => {
+const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const { t } = useLang();
   const [photos, setPhotos] = useState<CloudinaryResource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -165,6 +165,52 @@ const PhotoGallery = () => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [photosByTag, setPhotosByTag] = useState<Record<string, CloudinaryResource[]>>({});
+  const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
+  const [showReportedOnly, setShowReportedOnly] = useState(false);
+
+  const fetchReports = useCallback(async () => {
+    const { data } = await supabase
+      .from("photo_reports")
+      .select("public_id")
+      .eq("resolved", false);
+    if (data) setReportedIds(new Set(data.map((r: { public_id: string }) => r.public_id)));
+  }, []);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  const reportPhoto = useCallback(
+    async (photo: CloudinaryResource) => {
+      if (reportedIds.has(photo.public_id)) return;
+      setReportedIds((prev) => new Set(prev).add(photo.public_id));
+      const { error: reportError } = await supabase
+        .from("photo_reports")
+        .insert({ public_id: photo.public_id, reason: "guest_report" });
+      if (reportError) {
+        setReportedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(photo.public_id);
+          return next;
+        });
+        toast({
+          title: t("Nie udało się zgłosić", "Report failed"),
+          description: t("Spróbuj ponownie za chwilę.", "Please try again in a moment."),
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: t("Zdjęcie zgłoszone", "Photo reported"),
+        description: t(
+          "Dziękujemy — zdjęcie trafiło do weryfikacji.",
+          "Thank you — the photo is queued for review."
+        ),
+      });
+    },
+    [reportedIds, t]
+  );
+
 
   const fetchPhotos = useCallback(async () => {
     setLoading(true);
