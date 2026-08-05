@@ -370,37 +370,20 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
 
           <div className="reveal-child mb-8 border border-border/60 bg-card/50 p-4 flex flex-wrap items-center justify-center gap-3 text-center">
             <ShieldCheck className="w-4 h-4 text-wedding-gold" />
-            {signedIn ? (
-              <>
-                <p className="font-sans text-xs text-muted-foreground">
-                  {t("Zalogowano jako", "Signed in as")}{" "}
-                  <span className="text-foreground">{session?.user.email}</span>
-                </p>
-                <button
-                  onClick={signOut}
-                  className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t("Wyloguj", "Sign out")}
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="font-sans text-xs text-muted-foreground">
-                  {t(
-                    "Wysyłanie zdjęć wymaga zalogowania — chronimy galerię przed spamem.",
-                    "Uploading photos requires signing in — we keep the gallery spam-free."
-                  )}
-                </p>
-                <button
-                  onClick={() => setAuthOpen(true)}
-                  className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
-                >
-                  {t("Zaloguj się", "Sign in")}
-                </button>
-              </>
-            )}
+            <p className="font-sans text-xs text-muted-foreground">
+              {t("Podpisujesz zdjęcia jako", "You sign photos as")}{" "}
+              <span className="text-foreground">
+                {authorName || t("(anonimowo)", "(anonymous)")}
+              </span>
+            </p>
+            <button
+              onClick={askName}
+              className="font-sans text-xs uppercase tracking-[0.15em] text-wedding-gold hover:underline"
+            >
+              {authorName ? t("Zmień imię", "Change name") : t("Podaj imię", "Set name")}
+            </button>
           </div>
+
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {challenges.map((c, i) => (
