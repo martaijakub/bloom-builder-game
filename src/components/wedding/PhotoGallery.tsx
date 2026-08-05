@@ -220,10 +220,13 @@ const PhotoGallery = () => {
   }, [fetchPhotos]);
 
   const filteredPhotos = useMemo(() => {
-    if (!activeTag) return photos;
-    if (photosByTag[activeTag]) return photosByTag[activeTag];
-    return photos.filter((p) => p.tags?.includes(activeTag));
-  }, [photos, activeTag, photosByTag]);
+    let list = photos;
+    if (activeTag) {
+      list = photosByTag[activeTag] ?? photos.filter((p) => p.tags?.includes(activeTag));
+    }
+    if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    return list;
+  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds]);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
