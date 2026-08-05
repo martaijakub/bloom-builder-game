@@ -344,6 +344,19 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
             <Filter className="w-3 h-3" />
             {t("Wszystkie", "All")} ({photos.length})
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowReportedOnly((v) => !v)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-sans text-xs tracking-wide rounded-full border transition-all duration-200 ${
+                showReportedOnly
+                  ? "bg-destructive text-destructive-foreground border-destructive"
+                  : "bg-card/50 text-destructive border-destructive/50 hover:border-destructive"
+              }`}
+            >
+              <ShieldAlert className="w-3 h-3" />
+              {t("Do weryfikacji", "To review")} ({reportedIds.size})
+            </button>
+          )}
           {availableTags.map((f) => {
             const count = photosByTag[f.tag]?.length || photos.filter((p) => p.tags?.includes(f.tag)).length;
             return (
