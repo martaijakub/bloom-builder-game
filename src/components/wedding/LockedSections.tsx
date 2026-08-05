@@ -425,9 +425,8 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
           <PhotoGallery />
         </div>
       </section>
-
-      <GuestAuthModal open={authOpen} onClose={handleAuthClose} />
     </>
+
 
   );
 };
