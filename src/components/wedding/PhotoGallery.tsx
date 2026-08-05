@@ -353,25 +353,42 @@ const PhotoGallery = () => {
           ) : (
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {filteredPhotos.map((photo, i) => (
-                <button
+                <div
                   key={photo.public_id}
-                  onClick={() => openLightbox(i)}
-                  className="text-left border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                  className={`relative border transition-all duration-300 group ${
+                    reportedIds.has(photo.public_id)
+                      ? "border-destructive/60"
+                      : "border-border/40 hover:border-wedding-gold/60"
+                  }`}
                 >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={getImageUrl(photo.public_id)}
-                      alt={`Guest photo ${i + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  </div>
-                  {getUploader(photo) && (
-                    <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
-                      {getUploader(photo)}
-                    </p>
-                  )}
-                </button>
+                  <button onClick={() => openLightbox(i)} className="block w-full text-left">
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={getImageUrl(photo.public_id)}
+                        alt={`Guest photo ${i + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
+                    {getUploader(photo) && (
+                      <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
+                        {getUploader(photo)}
+                      </p>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => reportPhoto(photo)}
+                    disabled={reportedIds.has(photo.public_id)}
+                    title={t("Zgłoś zdjęcie", "Report photo")}
+                    className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                      reportedIds.has(photo.public_id)
+                        ? "bg-destructive/80 text-destructive-foreground"
+                        : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
+                    }`}
+                  >
+                    <Flag className="w-3 h-3" />
+                  </button>
+                </div>
               ))}
 
             </div>
@@ -387,6 +404,8 @@ const PhotoGallery = () => {
           onClose={closeLightbox}
           onNext={goNext}
           onPrev={goPrev}
+          onReport={reportPhoto}
+          reported={reportedIds.has(filteredPhotos[lightboxIndex].public_id)}
         />
       )}
     </div>
