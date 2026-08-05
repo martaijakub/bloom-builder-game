@@ -421,7 +421,7 @@ const LockedSections = ({ unlocked, isAdmin, menuUnlocked }: LockedSectionsProps
           </div>
 
           {/* Photo Gallery */}
-          <PhotoGallery />
+          <PhotoGallery isAdmin={isAdmin} />
         </div>
       </section>
     </>
