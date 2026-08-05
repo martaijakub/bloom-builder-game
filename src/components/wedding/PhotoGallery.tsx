@@ -143,6 +143,14 @@ const LightboxOverlay = ({
           </span>
         )}
         <span>{index + 1} / {photos.length}</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onReport(photos[index]); }}
+          disabled={reported}
+          className="mt-1 flex items-center gap-1.5 border border-white/30 px-3 py-1.5 uppercase tracking-widest text-[10px] text-white/80 hover:text-white hover:border-white/60 disabled:opacity-50 transition-colors"
+        >
+          <Flag className="w-3 h-3" />
+          {reported ? t("Zgłoszone", "Reported") : t("Zgłoś zdjęcie", "Report photo")}
+        </button>
       </div>
 
     </div>
