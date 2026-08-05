@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      photo_reports: {
+        Row: {
+          created_at: string
+          id: string
+          public_id: string
+          reason: string | null
+          resolved: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          public_id: string
+          reason?: string | null
+          resolved?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          public_id?: string
+          reason?: string | null
+          resolved?: boolean
+        }
+        Relationships: []
+      }
       seating_plan: {
         Row: {
           data: Json

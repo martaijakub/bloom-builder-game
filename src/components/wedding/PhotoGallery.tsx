@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LangContext";
-import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter, Flag, ShieldAlert } from "lucide-react";
 
 const CLOUD_NAME = "dyz8kvmfn";
 const FOLDER = "wedding_guests_uploads";
@@ -54,12 +56,16 @@ const LightboxOverlay = ({
   onClose,
   onNext,
   onPrev,
+  onReport,
+  reported,
 }: {
   photos: CloudinaryResource[];
   index: number;
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
+  onReport: (photo: CloudinaryResource) => void;
+  reported: boolean;
 }) => {
   const { t } = useLang();
 
@@ -137,13 +143,21 @@ const LightboxOverlay = ({
           </span>
         )}
         <span>{index + 1} / {photos.length}</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onReport(photos[index]); }}
+          disabled={reported}
+          className="mt-1 flex items-center gap-1.5 border border-white/30 px-3 py-1.5 uppercase tracking-widest text-[10px] text-white/80 hover:text-white hover:border-white/60 disabled:opacity-50 transition-colors"
+        >
+          <Flag className="w-3 h-3" />
+          {reported ? t("Zgłoszone", "Reported") : t("Zgłoś zdjęcie", "Report photo")}
+        </button>
       </div>
 
     </div>
   );
 };
 
-const PhotoGallery = () => {
+const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const { t } = useLang();
   const [photos, setPhotos] = useState<CloudinaryResource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,6 +165,52 @@ const PhotoGallery = () => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [photosByTag, setPhotosByTag] = useState<Record<string, CloudinaryResource[]>>({});
+  const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
+  const [showReportedOnly, setShowReportedOnly] = useState(false);
+
+  const fetchReports = useCallback(async () => {
+    const { data } = await supabase
+      .from("photo_reports")
+      .select("public_id")
+      .eq("resolved", false);
+    if (data) setReportedIds(new Set(data.map((r: { public_id: string }) => r.public_id)));
+  }, []);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  const reportPhoto = useCallback(
+    async (photo: CloudinaryResource) => {
+      if (reportedIds.has(photo.public_id)) return;
+      setReportedIds((prev) => new Set(prev).add(photo.public_id));
+      const { error: reportError } = await supabase
+        .from("photo_reports")
+        .insert({ public_id: photo.public_id, reason: "guest_report" });
+      if (reportError) {
+        setReportedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(photo.public_id);
+          return next;
+        });
+        toast({
+          title: t("Nie udało się zgłosić", "Report failed"),
+          description: t("Spróbuj ponownie za chwilę.", "Please try again in a moment."),
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: t("Zdjęcie zgłoszone", "Photo reported"),
+        description: t(
+          "Dziękujemy — zdjęcie trafiło do weryfikacji.",
+          "Thank you — the photo is queued for review."
+        ),
+      });
+    },
+    [reportedIds, t]
+  );
+
 
   const fetchPhotos = useCallback(async () => {
     setLoading(true);
@@ -206,10 +266,13 @@ const PhotoGallery = () => {
   }, [fetchPhotos]);
 
   const filteredPhotos = useMemo(() => {
-    if (!activeTag) return photos;
-    if (photosByTag[activeTag]) return photosByTag[activeTag];
-    return photos.filter((p) => p.tags?.includes(activeTag));
-  }, [photos, activeTag, photosByTag]);
+    let list = photos;
+    if (activeTag) {
+      list = photosByTag[activeTag] ?? photos.filter((p) => p.tags?.includes(activeTag));
+    }
+    if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    return list;
+  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds]);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
@@ -281,6 +344,19 @@ const PhotoGallery = () => {
             <Filter className="w-3 h-3" />
             {t("Wszystkie", "All")} ({photos.length})
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowReportedOnly((v) => !v)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-sans text-xs tracking-wide rounded-full border transition-all duration-200 ${
+                showReportedOnly
+                  ? "bg-destructive text-destructive-foreground border-destructive"
+                  : "bg-card/50 text-destructive border-destructive/50 hover:border-destructive"
+              }`}
+            >
+              <ShieldAlert className="w-3 h-3" />
+              {t("Do weryfikacji", "To review")} ({reportedIds.size})
+            </button>
+          )}
           {availableTags.map((f) => {
             const count = photosByTag[f.tag]?.length || photos.filter((p) => p.tags?.includes(f.tag)).length;
             return (
@@ -339,25 +415,42 @@ const PhotoGallery = () => {
           ) : (
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {filteredPhotos.map((photo, i) => (
-                <button
+                <div
                   key={photo.public_id}
-                  onClick={() => openLightbox(i)}
-                  className="text-left border border-border/40 hover:border-wedding-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                  className={`relative border transition-all duration-300 group ${
+                    reportedIds.has(photo.public_id)
+                      ? "border-destructive/60"
+                      : "border-border/40 hover:border-wedding-gold/60"
+                  }`}
                 >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={getImageUrl(photo.public_id)}
-                      alt={`Guest photo ${i + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  </div>
-                  {getUploader(photo) && (
-                    <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
-                      {getUploader(photo)}
-                    </p>
-                  )}
-                </button>
+                  <button onClick={() => openLightbox(i)} className="block w-full text-left">
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={getImageUrl(photo.public_id)}
+                        alt={`Guest photo ${i + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
+                    {getUploader(photo) && (
+                      <p className="px-1.5 py-1 font-sans text-[10px] text-muted-foreground truncate">
+                        {getUploader(photo)}
+                      </p>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => reportPhoto(photo)}
+                    disabled={reportedIds.has(photo.public_id)}
+                    title={t("Zgłoś zdjęcie", "Report photo")}
+                    className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                      reportedIds.has(photo.public_id)
+                        ? "bg-destructive/80 text-destructive-foreground"
+                        : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
+                    }`}
+                  >
+                    <Flag className="w-3 h-3" />
+                  </button>
+                </div>
               ))}
 
             </div>
@@ -373,6 +466,8 @@ const PhotoGallery = () => {
           onClose={closeLightbox}
           onNext={goNext}
           onPrev={goPrev}
+          onReport={reportPhoto}
+          reported={reportedIds.has(filteredPhotos[lightboxIndex].public_id)}
         />
       )}
     </div>
