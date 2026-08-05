@@ -56,12 +56,16 @@ const LightboxOverlay = ({
   onClose,
   onNext,
   onPrev,
+  onReport,
+  reported,
 }: {
   photos: CloudinaryResource[];
   index: number;
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
+  onReport: (photo: CloudinaryResource) => void;
+  reported: boolean;
 }) => {
   const { t } = useLang();
 
