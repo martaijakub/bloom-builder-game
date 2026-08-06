@@ -69,27 +69,19 @@ const Navbar = ({ unlocked, menuUnlocked, onTryUnlock }: NavbarProps) => {
               </a>
             </li>
           ))}
-          {lockedLinks.map((item) => {
-            const isOpen = item.open ?? unlocked;
-            return (
+          {lockedLinks.map((item) => (
             <li key={item.section}>
               <button
                 onClick={() => {
                   handleNavClick();
                   onTryUnlock(item.section);
                 }}
-                className={`block w-full text-left px-6 py-3 md:py-0 text-sm font-sans font-medium tracking-wide transition-colors ${
-                  isOpen
-                    ? "text-wedding-gold"
-                    : "text-muted-foreground"
-                }`}
+                className="block w-full text-left px-6 py-3 md:py-0 text-sm font-sans font-medium tracking-wide text-foreground/80 hover:text-foreground transition-colors"
               >
-                <span className="mr-1 text-xs">{isOpen ? "◆" : "◇"}</span>
                 {item.label}
               </button>
             </li>
-            );
-          })}
+          ))}
           {/* Mobile language toggle */}
           <li className="md:hidden px-6 py-3 flex items-center gap-2">
             <button
