@@ -369,7 +369,7 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
             }`}
           >
             <Filter className="w-3 h-3" />
-            {t("Wszystkie", "All")} ({photos.length})
+            {t("Wszystkie", "All")} ({isAdmin ? photos.length : photos.filter((p) => !reportedIds.has(p.public_id)).length})
           </button>
           {isAdmin && (
             <button
