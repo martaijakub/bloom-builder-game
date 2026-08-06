@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter, Flag, ShieldAlert } from "lucide-react";
+import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter, Flag, ShieldAlert, RotateCcw } from "lucide-react";
 
 const CLOUD_NAME = "dyz8kvmfn";
 const FOLDER = "wedding_guests_uploads";
@@ -265,14 +265,41 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     fetchPhotos();
   }, [fetchPhotos]);
 
+  const restorePhoto = useCallback(
+    async (photo: CloudinaryResource) => {
+      const { error: fnError } = await supabase.functions.invoke("moderate-photo", {
+        body: { password: "ADMIN2026", public_id: photo.public_id, action: "restore" },
+      });
+      if (fnError) {
+        toast({
+          title: t("Nie udało się przywrócić", "Restore failed"),
+          variant: "destructive",
+        });
+        return;
+      }
+      setReportedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(photo.public_id);
+        return next;
+      });
+      toast({ title: t("Zdjęcie przywrócone", "Photo restored") });
+    },
+    [t]
+  );
+
   const filteredPhotos = useMemo(() => {
     let list = photos;
     if (activeTag) {
       list = photosByTag[activeTag] ?? photos.filter((p) => p.tags?.includes(activeTag));
     }
-    if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    if (isAdmin) {
+      if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    } else {
+      // Soft delete: reported photos are hidden from guests
+      list = list.filter((p) => !reportedIds.has(p.public_id));
+    }
     return list;
-  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds]);
+  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds, isAdmin]);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
@@ -342,7 +369,7 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
             }`}
           >
             <Filter className="w-3 h-3" />
-            {t("Wszystkie", "All")} ({photos.length})
+            {t("Wszystkie", "All")} ({isAdmin ? photos.length : photos.filter((p) => !reportedIds.has(p.public_id)).length})
           </button>
           {isAdmin && (
             <button
@@ -438,18 +465,28 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                       </p>
                     )}
                   </button>
-                  <button
-                    onClick={() => reportPhoto(photo)}
-                    disabled={reportedIds.has(photo.public_id)}
-                    title={t("Zgłoś zdjęcie", "Report photo")}
-                    className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
-                      reportedIds.has(photo.public_id)
-                        ? "bg-destructive/80 text-destructive-foreground"
-                        : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
-                    }`}
-                  >
-                    <Flag className="w-3 h-3" />
-                  </button>
+                  {isAdmin && reportedIds.has(photo.public_id) ? (
+                    <button
+                      onClick={() => restorePhoto(photo)}
+                      title={t("Przywróć zdjęcie", "Restore photo")}
+                      className="absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm bg-background/80 text-wedding-gold hover:text-foreground transition-colors"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => reportPhoto(photo)}
+                      disabled={reportedIds.has(photo.public_id)}
+                      title={t("Zgłoś zdjęcie", "Report photo")}
+                      className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                        reportedIds.has(photo.public_id)
+                          ? "bg-destructive/80 text-destructive-foreground"
+                          : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
+                      }`}
+                    >
+                      <Flag className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               ))}
 
