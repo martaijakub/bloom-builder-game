@@ -265,14 +265,41 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     fetchPhotos();
   }, [fetchPhotos]);
 
+  const restorePhoto = useCallback(
+    async (photo: CloudinaryResource) => {
+      const { error: fnError } = await supabase.functions.invoke("moderate-photo", {
+        body: { password: "ADMIN2026", public_id: photo.public_id, action: "restore" },
+      });
+      if (fnError) {
+        toast({
+          title: t("Nie udało się przywrócić", "Restore failed"),
+          variant: "destructive",
+        });
+        return;
+      }
+      setReportedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(photo.public_id);
+        return next;
+      });
+      toast({ title: t("Zdjęcie przywrócone", "Photo restored") });
+    },
+    [t]
+  );
+
   const filteredPhotos = useMemo(() => {
     let list = photos;
     if (activeTag) {
       list = photosByTag[activeTag] ?? photos.filter((p) => p.tags?.includes(activeTag));
     }
-    if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    if (isAdmin) {
+      if (showReportedOnly) list = list.filter((p) => reportedIds.has(p.public_id));
+    } else {
+      // Soft delete: reported photos are hidden from guests
+      list = list.filter((p) => !reportedIds.has(p.public_id));
+    }
     return list;
-  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds]);
+  }, [photos, activeTag, photosByTag, showReportedOnly, reportedIds, isAdmin]);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
