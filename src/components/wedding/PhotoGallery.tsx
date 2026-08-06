@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LangContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter, Flag, ShieldAlert } from "lucide-react";
+import { RefreshCw, X, ChevronLeft, ChevronRight, Image, Filter, Flag, ShieldAlert, RotateCcw } from "lucide-react";
 
 const CLOUD_NAME = "dyz8kvmfn";
 const FOLDER = "wedding_guests_uploads";
