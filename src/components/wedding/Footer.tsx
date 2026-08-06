@@ -50,6 +50,13 @@ const Footer = ({ onAdminUnlock }: FooterProps) => {
       <p className="font-sans text-xs text-muted-foreground/60">
         {t("Dziękujemy za celebrowanie tego dnia z nami", "Thank you for sharing this day with us")}
       </p>
+      <a
+        href="/misja"
+        title="⁂"
+        className="inline-block mt-6 font-sans text-[10px] tracking-[0.4em] uppercase text-muted-foreground/25 hover:text-wedding-gold transition-colors"
+      >
+        ⁂
+      </a>
     </footer>
   );
 };
