@@ -24,7 +24,6 @@ const Navbar = ({ unlocked, menuUnlocked, onTryUnlock }: NavbarProps) => {
     { href: "#schedule", label: t("O wydarzeniu", "About") },
     { href: "#stay", label: t("Noclegi", "Stay") },
     { href: "#activities", label: t("Okolica", "Explore") },
-    { href: "#coming-soon", label: t("Wkrótce", "Coming Soon") },
   ];
 
   const lockedLinks = [
