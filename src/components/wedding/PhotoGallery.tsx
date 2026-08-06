@@ -465,18 +465,28 @@ const PhotoGallery = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                       </p>
                     )}
                   </button>
-                  <button
-                    onClick={() => reportPhoto(photo)}
-                    disabled={reportedIds.has(photo.public_id)}
-                    title={t("Zgłoś zdjęcie", "Report photo")}
-                    className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
-                      reportedIds.has(photo.public_id)
-                        ? "bg-destructive/80 text-destructive-foreground"
-                        : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
-                    }`}
-                  >
-                    <Flag className="w-3 h-3" />
-                  </button>
+                  {isAdmin && reportedIds.has(photo.public_id) ? (
+                    <button
+                      onClick={() => restorePhoto(photo)}
+                      title={t("Przywróć zdjęcie", "Restore photo")}
+                      className="absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm bg-background/80 text-wedding-gold hover:text-foreground transition-colors"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => reportPhoto(photo)}
+                      disabled={reportedIds.has(photo.public_id)}
+                      title={t("Zgłoś zdjęcie", "Report photo")}
+                      className={`absolute top-1 right-1 p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                        reportedIds.has(photo.public_id)
+                          ? "bg-destructive/80 text-destructive-foreground"
+                          : "bg-background/70 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 md:opacity-0 max-md:opacity-100"
+                      }`}
+                    >
+                      <Flag className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               ))}
 
