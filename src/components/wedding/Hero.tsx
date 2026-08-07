@@ -1,4 +1,5 @@
 import { useLang } from "@/contexts/LangContext";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const { t } = useLang();
@@ -16,6 +17,20 @@ const Hero = () => {
       <div className="absolute top-1/3 right-8 w-px h-24 bg-gradient-to-b from-transparent via-wedding-blush/50 to-transparent hidden md:block" />
 
       <div className="relative z-10 max-w-3xl">
+        {/* Secret mission monogram — decorative seal */}
+        <Link
+          to="/misja"
+          className="inline-block mb-6 group"
+          aria-label={t("Tajne zadania", "Secret missions")}
+        >
+          <div className="relative w-16 h-16 mx-auto border border-wedding-gold/40 rounded-full flex items-center justify-center transition-all duration-500 group-hover:border-wedding-gold group-hover:scale-105 group-hover:shadow-[0_0_30px_-8px_hsl(var(--wedding-gold)/0.4)]">
+            <span className="absolute inset-1 border border-dashed border-wedding-gold/30 rounded-full" />
+            <span className="font-serif text-2xl text-wedding-gold/80 group-hover:text-wedding-gold transition-colors">
+              M<span className="text-sm align-top">&</span>J
+            </span>
+          </div>
+        </Link>
+
         {/* Small overline */}
         <p className="font-sans text-xs tracking-[0.35em] uppercase text-muted-foreground mb-8">
           {t("Zapraszamy na nasz ślub", "We invite you to our wedding")}
