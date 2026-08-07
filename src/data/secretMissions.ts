@@ -137,15 +137,15 @@ export const secretMissions: SecretMission[] = [
   {
     code: "MATCHA55",
     agent: "Bartek",
-    codename: 'Zaginiony „Miejski Stół”',
+    codename: 'Zaginiony „Miejski Stół"',
     emblem: "🍵",
     clearance: "POZIOM 55 · WIELKOMIEJSKA KONTRABANDA",
     intro:
-      "Tradycyjny „wiejski stół” to przeżytek. Czas na odrobinę wielkomiejskiego, alternatywnego luksusu na tym weselu.",
+      "Tradycyjny „wiejski stół" to przeżytek. Czas na odrobinę wielkomiejskiego, alternatywnego luksusu na tym weselu.",
     briefing: [
       {
         label: "Cel",
-        text: "W okolicach stołu prezydialnego ukryliśmy tajny ładunek z zaopatrzeniem dla prawdziwych miastowych. Odzyskaj go i zorganizuj na swoim stole pokazowy „Miejski Stół”.",
+        text: "W okolicach stołu prezydialnego ukryliśmy tajny ładunek z zaopatrzeniem dla prawdziwych miastowych. Odzyskaj go i zorganizuj na swoim stole pokazowy „Miejski Stół".",
       },
       {
         label: "Zadanie główne",
@@ -153,10 +153,35 @@ export const secretMissions: SecretMission[] = [
       },
       {
         label: "Zasada główna",
-        text: "Twój stół ma się stać oazą alternatywnego życia. Udawaj, że to Twoja własna „kontrabanda”, bo nie ufasz weselnemu menu. (PS. Obsługa sali wie o rekwizytach, ale rodzina nie może się dowiedzieć, że to nasza sprawka!)",
+        text: "Twój stół ma się stać oazą alternatywnego życia. Udawaj, że to Twoja własna „kontrabanda", bo nie ufasz weselnemu menu. (PS. Obsługa sali wie o rekwizytach, ale rodzina nie może się dowiedzieć, że to nasza sprawka!)",
       },
     ],
     proof:
-      "Każdemu ze zwerbowanych „wyznawców” uroczyście wręcz mini bandę lub porcję matchy — najlepiej wykonajcie wspólnie krótki trening z użyciem mini bandy. I daj się złapać fotografowi!",
+      "Każdemu ze zwerbowanych „wyznawców" uroczyście wręcz mini bandę lub porcję matchy — najlepiej wykonajcie wspólnie krótki trening z użyciem mini bandy. I daj się złapać fotografowi!",
+  },
+  {
+    code: "WYTRZYMAJ66",
+    agent: "Magda (Siostra Panny Młodej)",
+    codename: 'Operacja „Wytrzymaj do jutra"',
+    emblem: "🤍",
+    clearance: "POZIOM 66 · JEDNOSTKA EMOCYJNA",
+    intro:
+      "Wiemy, że nie możesz wytrzymać do jutra. Twoja misja jest wyjątkowa — nie wymaga podstępów, tylko szczerej siostrzanej miłości.",
+    briefing: [
+      {
+        label: "Cel",
+        text: "Przetrwać do 08.08.2026 i być obecną przy najważniejszym momencie życia Twojej siostry.",
+      },
+      {
+        label: "Zadanie główne",
+        text: "Bawić się najlepiej, jak tylko siostra potrafi — tańczyć, śmiać się, śpiewać i czerpać z tego dnia absolutne maksimum.",
+      },
+      {
+        label: "Zasada główna",
+        text: "Podczas ceremonii ślubnej puścić wodze emocjom. Łzy wzruszenia są obowiązkowym elementem wyposażenia agentki.",
+      },
+    ],
+    proof:
+      "Dowodem wykonania misji jest szczery uśmiech przez całe wesele oraz łzy uruchomione podczas ślubu. Fotograf musi to uchwycić!",
   },
 ];
