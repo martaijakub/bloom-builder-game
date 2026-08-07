@@ -16,9 +16,47 @@ interface EventCardProps {
   titleEn: string;
   lines: { pl: string; en: string; accent?: boolean; subtle?: boolean }[];
   maps?: EventMap[];
+  secretLink?: string;
 }
 
-const EventCard = ({ titlePl, titleEn, lines, maps }: EventCardProps) => {
+const LONG_PRESS_MS = 800;
+
+const EventCard = ({ titlePl, titleEn, lines, maps, secretLink }: EventCardProps) => {
+  const navigate = useNavigate();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const triggeredRef = useRef(false);
+
+  const startPress = useCallback(() => {
+    triggeredRef.current = false;
+    timerRef.current = setTimeout(() => {
+      triggeredRef.current = true;
+      if (secretLink) {
+        navigate(secretLink);
+      }
+    }, LONG_PRESS_MS);
+  }, [navigate, secretLink]);
+
+  const endPress = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const preventContextMenu = useCallback((e: React.MouseEvent) => {
+    if (secretLink) e.preventDefault();
+  }, [secretLink]);
+
+  const longPressHandlers = secretLink
+    ? {
+        onMouseDown: startPress,
+        onMouseUp: endPress,
+        onMouseLeave: endPress,
+        onTouchStart: startPress,
+        onTouchEnd: endPress,
+        onContextMenu: preventContextMenu,
+      }
+    : {};
   const { t } = useLang();
   const [openMap, setOpenMap] = useState<number | null>(null);
 
