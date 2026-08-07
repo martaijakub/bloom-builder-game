@@ -141,11 +141,11 @@ export const secretMissions: SecretMission[] = [
     emblem: "🍵",
     clearance: "POZIOM 55 · WIELKOMIEJSKA KONTRABANDA",
     intro:
-      "Tradycyjny „wiejski stół" to przeżytek. Czas na odrobinę wielkomiejskiego, alternatywnego luksusu na tym weselu.",
+      "Tradycyjny „wiejski stół\" to przeżytek. Czas na odrobinę wielkomiejskiego, alternatywnego luksusu na tym weselu.",
     briefing: [
       {
         label: "Cel",
-        text: "W okolicach stołu prezydialnego ukryliśmy tajny ładunek z zaopatrzeniem dla prawdziwych miastowych. Odzyskaj go i zorganizuj na swoim stole pokazowy „Miejski Stół".",
+        text: "W okolicach stołu prezydialnego ukryliśmy tajny ładunek z zaopatrzeniem dla prawdziwych miastowych. Odzyskaj go i zorganizuj na swoim stole pokazowy „Miejski Stół\".",
       },
       {
         label: "Zadanie główne",
@@ -153,11 +153,11 @@ export const secretMissions: SecretMission[] = [
       },
       {
         label: "Zasada główna",
-        text: "Twój stół ma się stać oazą alternatywnego życia. Udawaj, że to Twoja własna „kontrabanda", bo nie ufasz weselnemu menu. (PS. Obsługa sali wie o rekwizytach, ale rodzina nie może się dowiedzieć, że to nasza sprawka!)",
+        text: "Twój stół ma się stać oazą alternatywnego życia. Udawaj, że to Twoja własna „kontrabanda\", bo nie ufasz weselnemu menu. (PS. Obsługa sali wie o rekwizytach, ale rodzina nie może się dowiedzieć, że to nasza sprawka!)",
       },
     ],
     proof:
-      "Każdemu ze zwerbowanych „wyznawców" uroczyście wręcz mini bandę lub porcję matchy — najlepiej wykonajcie wspólnie krótki trening z użyciem mini bandy. I daj się złapać fotografowi!",
+      "Każdemu ze zwerbowanych „wyznawców\" uroczyście wręcz mini bandę lub porcję matchy — najlepiej wykonajcie wspólnie krótki trening z użyciem mini bandy. I daj się złapać fotografowi!",
   },
   {
     code: "WYTRZYMAJ66",
