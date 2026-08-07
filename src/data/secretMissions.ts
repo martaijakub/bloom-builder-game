@@ -170,7 +170,7 @@ export const secretMissions: SecretMission[] = [
     briefing: [
       {
         label: "Cel",
-        text: "Przetrwać do 08.08.2026 i być obecną przy najważniejszym momencie życia Twojej siostry.",
+        text: "Przetrwać do 08.08.2026 i być obecną przy najważniejszym momencie życia Twojego brata.",
       },
       {
         label: "Zadanie główne",
