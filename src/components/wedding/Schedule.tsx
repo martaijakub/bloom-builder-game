@@ -187,6 +187,7 @@ const Schedule = () => {
         { pl: "Świadek — Piotr Serednicki", en: "Witness — Piotr Serednicki", subtle: true },
         { pl: "Świadkowa — Joanna Gołębiewska", en: "Witness — Joanna Gołębiewska", subtle: true },
       ],
+      secretLink: "/misja",
     },
     {
       titlePl: "Dzieci", titleEn: "Children",
