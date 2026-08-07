@@ -61,8 +61,8 @@ const EventCard = ({ titlePl, titleEn, lines, maps, secretLink }: EventCardProps
   const [openMap, setOpenMap] = useState<number | null>(null);
 
   return (
-    <div className="reveal-child group">
-      <div className="border border-border/60 bg-card/50 backdrop-blur-sm p-8 md:p-10 transition-all duration-500 hover:border-wedding-gold/40 hover:bg-card">
+    <div className="reveal-child group" {...longPressHandlers}>
+      <div className={`border border-border/60 bg-card/50 backdrop-blur-sm p-8 md:p-10 transition-all duration-500 hover:border-wedding-gold/40 hover:bg-card ${secretLink ? "select-none" : ""}`}>
         <h3 className="font-serif text-2xl md:text-3xl font-light text-foreground mb-4 tracking-tight">
           {t(titlePl, titleEn)}
         </h3>
