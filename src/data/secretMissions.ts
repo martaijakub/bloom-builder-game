@@ -161,7 +161,7 @@ export const secretMissions: SecretMission[] = [
   },
   {
     code: "WYTRZYMAJ66",
-    agent: "Magda (Siostra Panny Młodej)",
+    agent: "Magda (Siostra Pana Młodego)",
     codename: 'Operacja „Wytrzymaj do jutra"',
     emblem: "🤍",
     clearance: "POZIOM 66 · JEDNOSTKA EMOCYJNA",
