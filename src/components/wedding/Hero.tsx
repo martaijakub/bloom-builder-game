@@ -1,4 +1,5 @@
 import { useLang } from "@/contexts/LangContext";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const { t } = useLang();

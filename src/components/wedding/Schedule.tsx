@@ -1,7 +1,8 @@
 import { useLang } from "@/contexts/LangContext";
 import { useReveal } from "@/hooks/useReveal";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface EventMap {
   mapUrl: string;
